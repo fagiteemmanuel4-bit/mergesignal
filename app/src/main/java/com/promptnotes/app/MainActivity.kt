@@ -11,6 +11,7 @@ import android.os.Build
 import android.os.Bundle
 import android.view.HapticFeedbackConstants
 import androidx.activity.ComponentActivity
+import androidx.activity.compose.BackHandler
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.compose.setContent
 import androidx.activity.result.contract.ActivityResultContracts
@@ -323,7 +324,7 @@ private fun NotesHome(
     val filtered = notes.filter {
         query.isBlank() || it.title.contains(query, true) || it.content.contains(query, true) || it.folder.contains(query, true)
     }
-    Column(modifier.fillMaxSize().padding(horizontal = 18.dp)) {
+    Column(modifier.fillMaxSize().padding(horizontal = 18.dp).imePadding()) {
         Spacer(Modifier.height(8.dp))
         OutlinedTextField(
             value = query, onValueChange = { query = it }, modifier = Modifier.fillMaxWidth(),
@@ -400,6 +401,7 @@ private fun EditorScreen(
     var body by remember(note?.id) { mutableStateOf(note?.content.orEmpty()) }
     var folder by remember(note?.id) { mutableStateOf(note?.folder ?: "Personal") }
     var showDiscard by remember { mutableStateOf(false) }
+    BackHandler(enabled = true) { showDiscard = true }
     Scaffold(
         topBar = {
             TopAppBar(
