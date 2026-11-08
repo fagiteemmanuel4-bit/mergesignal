@@ -1,23 +1,42 @@
-# Prompt Notes — Android + Live Interface
+# Prompt Notes — Native Android
 
-Prompt Notes is packaged as an Android WebView app with a bundled offline fallback and a remotely refreshed interface.
+**Prompt Notes is a product of Cryona.** Version 2.0.0 is a native Android rebuild. The application UI and core features are implemented with Kotlin and Jetpack Compose; it does not use a WebView, HTML, CSS, or JavaScript runtime.
 
-## Android
-- Minimum Android: 7.0 (API 24)
-- Application ID: `com.promptnotes.app`
-- Java + Android WebView, JDK 17, Android Gradle Plugin 8.6.1
-- Existing note data stays in the same `file:///android_asset/index.html` WebView origin across app versions.
-- When online, the Android shell fetches the current UI from the repository's raw GitHub source and serves it under the same local origin. This preserves localStorage and avoids a data migration.
-- The live HTML is checked on app launch/resume and every five minutes. Updates apply immediately when idle, or after the current note editor is closed.
-- When offline, the app uses the last cached live interface or the bundled fallback.
+## Native technology
+- Kotlin 2.0.21 and Android Gradle Plugin 8.6.1
+- Jetpack Compose + Material 3
+- AndroidX Activity, Lifecycle and SplashScreen
+- Room database for on-device notes
+- WorkManager for scheduled note reminders
+- Android notification and vibration APIs
+- Android Sharesheet for exporting notes
+- JDK 17, compile/target SDK 35, minimum SDK 24
 
-## Live interface and icons
-- Edit `web/index.html` for UI changes. The app includes a Markdown import path to restore unlocked notes exported from the earlier standalone build.
-- Bootstrap Icons 1.13.1 provides the icon set. The build bundles the stylesheet and WOFF2 font locally so icons also work offline.
-- Every push to `main` triggers a GitHub Actions build. The workflow copies `web/index.html` into the packaged offline fallback before compiling the APK.
+## Current app capabilities
+- Native splash and first-run onboarding
+- Notes home, search, create/edit, pin, duplicate and delete
+- Local Room persistence
+- Light and dark appearance
+- Native notification permission flow
+- Scheduled reminders using WorkManager
+- Native text export/share
+- AI Studio interface with an explicit not-connected state
+- Cryona product branding
 
-## Automatic update limits
-HTML, CSS, JavaScript, text, and UI changes can reach installed apps without reinstalling. Changes to Java/native Android code, permissions, app signing, or Android platform integration still require a new APK. Users need an internet connection for live UI updates; offline use remains on the last cached/bundled version.
+## AI connection
+The AI screen is intentionally not a fake/demo responder. It displays an explicit pending state until a secure backend is configured. The OpenRouter key must be stored as a server-side secret in a Vercel Function or Supabase Edge Function; it must never be embedded in the APK or committed to this repository.
 
-## AI integration
-The original HTML uses `claude.use('sample')`, which belongs to the Claude artifact runtime and is not available in a standalone Android app. AI chat, rewriting, and run features still require a secure standalone AI backend. No provider secret is embedded in the APK.
+## Build and release
+The GitHub Actions workflow runs unit tests and builds/verifies a debug APK. A signed production APK is built and published only when all four repository Actions secrets are configured:
+- ANDROID_KEYSTORE_BASE64 — base64-encoded persistent Android keystore
+- ANDROID_KEYSTORE_PASSWORD
+- ANDROID_KEY_ALIAS
+- ANDROID_KEY_PASSWORD
+
+Use the same keystore for every future release so Android can install updates over existing installations. Never rotate or regenerate this key for routine updates.
+
+## Existing app data and migration
+The old 1.x app stored notes in WebView local storage. The native Room database is a separate storage system and cannot silently read that old browser store. Before replacing an older installation, export its notes from the old app and keep the backup. Import support will be included in the native app before the migration is considered complete. Do not uninstall the old app until the backup is safely stored.
+
+## Production status
+The native foundation and initial screens are being implemented on a dedicated branch. A green CI build is required before merge. Physical-device checks are still required for notifications, vibration, keyboard/IME behavior, Android 13+ permission prompts, and upgrade/data migration. The signed release remains gated on the persistent keystore secrets above.
