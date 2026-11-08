@@ -1,82 +1,107 @@
-name: Build Prompt Notes Android APK
+name: Build Prompt Notes Native Android
 
 on:
   push:
+    branches: ['**']
+    paths: ['app/**', 'build.gradle', 'settings.gradle', 'gradle.properties', '.github/workflows/android.yml']
+  pull_request:
     branches: [main]
-    paths:
-      - 'app/**'
-      - 'build.gradle'
-      - 'settings.gradle'
-      - 'gradle.properties'
+    paths: ['app/**', 'build.gradle', 'settings.gradle', 'gradle.properties', '.github/workflows/android.yml']
   workflow_dispatch:
 
 permissions:
   contents: write
 
 jobs:
-  build:
-    name: Build and publish Android APK
+  verify:
+    name: Verify native Android app
     runs-on: ubuntu-latest
     steps:
-      - name: Check out source
-        uses: actions/checkout@v4
-
-      - name: Set up JDK 17
-        uses: actions/setup-java@v4
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
         with:
           distribution: temurin
           java-version: '17'
-
-      - name: Set up Android SDK
-        uses: android-actions/setup-android@v3
+      - uses: android-actions/setup-android@v3
         with:
           packages: platform-tools
-
-      - name: Install Android SDK platform and build tools
+      - name: Install Android SDK
         run: sdkmanager "platforms;android-35" "build-tools;35.0.0"
-
-      - name: Sync live UI into offline fallback
-        run: cp web/index.html app/src/main/assets/index.html
-
-      - name: Bundle Bootstrap Icons for offline use
-        run: |
-          mkdir -p app/src/main/assets/fonts
-          curl -fsSL "https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css" -o app/src/main/assets/bootstrap-icons.css
-          curl -fsSL "https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/fonts/bootstrap-icons.woff2" -o app/src/main/assets/fonts/bootstrap-icons.woff2
-          test -s app/src/main/assets/bootstrap-icons.css
-          test -s app/src/main/assets/fonts/bootstrap-icons.woff2
-
-      - name: Set up Gradle
-        uses: gradle/actions/setup-gradle@v4
+      - uses: gradle/actions/setup-gradle@v4
         with:
           gradle-version: '8.7'
-
-      - name: Build debug APK
-        run: gradle --no-daemon clean assembleDebug
-
-      - name: Verify APK
+      - name: Run unit tests and build native debug APK
+        run: gradle --no-daemon clean testDebugUnitTest assembleDebug
+      - name: Verify debug APK
         run: |
           test -s app/build/outputs/apk/debug/app-debug.apk
           $ANDROID_HOME/build-tools/35.0.0/apksigner verify --verbose app/build/outputs/apk/debug/app-debug.apk
           $ANDROID_HOME/build-tools/35.0.0/aapt dump badging app/build/outputs/apk/debug/app-debug.apk | head -n 8
-
-      - name: Upload APK build artifact
-        uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v4
         with:
-          name: prompt-notes-android-apk
+          name: prompt-notes-native-debug
           path: app/build/outputs/apk/debug/app-debug.apk
           if-no-files-found: error
           retention-days: 30
 
-      - name: Publish APK release
-        uses: softprops/action-gh-release@v2
+  signed-release:
+    name: Build signed production APK
+    if: github.event_name != 'pull_request'
+    runs-on: ubuntu-latest
+    env:
+      ANDROID_KEYSTORE_BASE64: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
+    steps:
+      - name: Explain signing requirement
+        if: env.ANDROID_KEYSTORE_BASE64 == ''
+        run: echo "Signed release skipped. Configure the persistent Android keystore Actions secrets to publish a production APK."
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
         with:
-          tag_name: prompt-notes-v1.1.1-${{ github.run_number }}
-          name: Prompt Notes Android v1.1.1-${{ github.run_number }}
+          distribution: temurin
+          java-version: '17'
+      - uses: android-actions/setup-android@v3
+        with:
+          packages: platform-tools
+      - name: Install Android SDK
+        run: sdkmanager "platforms;android-35" "build-tools;35.0.0"
+      - uses: gradle/actions/setup-gradle@v4
+        if: env.ANDROID_KEYSTORE_BASE64 != ''
+        with:
+          gradle-version: '8.7'
+      - name: Restore private signing key
+        if: env.ANDROID_KEYSTORE_BASE64 != ''
+        env:
+          KEYSTORE_BASE64: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
+        run: |
+          echo "$KEYSTORE_BASE64" | base64 --decode > "$RUNNER_TEMP/prompt-notes-release.keystore"
+          echo "ANDROID_KEYSTORE_PATH=$RUNNER_TEMP/prompt-notes-release.keystore" >> "$GITHUB_ENV"
+      - name: Build signed release APK
+        if: env.ANDROID_KEYSTORE_BASE64 != ''
+        env:
+          ANDROID_KEYSTORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
+          ANDROID_KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
+          ANDROID_KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
+        run: gradle --no-daemon clean assembleRelease
+      - name: Verify signed release
+        if: env.ANDROID_KEYSTORE_BASE64 != ''
+        run: |
+          test -s app/build/outputs/apk/release/app-release.apk
+          $ANDROID_HOME/build-tools/35.0.0/apksigner verify --verbose app/build/outputs/apk/release/app-release.apk
+      - uses: actions/upload-artifact@v4
+        if: env.ANDROID_KEYSTORE_BASE64 != ''
+        with:
+          name: prompt-notes-native-release
+          path: app/build/outputs/apk/release/app-release.apk
+          if-no-files-found: error
+          retention-days: 90
+      - uses: softprops/action-gh-release@v2
+        if: env.ANDROID_KEYSTORE_BASE64 != ''
+        with:
+          tag_name: prompt-notes-v2.0.0-${{ github.run_number }}
+          name: Prompt Notes Native Android v2.0.0-${{ github.run_number }}
           body: |
-            Prompt Notes Android APK.
-            Minimum Android version: Android 7.0 (API 24).
-            The app checks GitHub for interface updates and applies them automatically.
-            This is a debug-signed APK for direct installation.
-          files: app/build/outputs/apk/debug/app-debug.apk
+            Native Kotlin + Jetpack Compose build.
+            Requires Android 7.0 (API 24) or newer.
+            This release is signed with the persistent Cryona Android release key.
+          files: app/build/outputs/apk/release/app-release.apk
           fail_on_unmatched_files: true
