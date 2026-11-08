@@ -4,6 +4,10 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Prompt Notes</title>
+<meta name="theme-color" content="#fbfaf8">
+<link rel="manifest" href="./manifest.webmanifest">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css">
+
 <style>
 :root{--bg:#fbfaf8;--fg:#1f1d1a;--muted:#8a857d;--line:#ebe7e1;--card:#fff;--accent:#c96442;--accent-fg:#fff;--rec:#e5484d;--fs:16px;
 box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
@@ -11,12 +15,12 @@ box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:en
 :root[data-theme="dark"]{--bg:#1c1b19;--fg:#f1ede6;--muted:#8d877d;--line:#33312d;--card:#262522}
 :root[data-theme="black"]{--bg:#000;--fg:#eee;--muted:#8a8a8a;--line:#222;--card:#101010}
 #pin{width:100%;font-size:26px;letter-spacing:12px;text-align:center;padding:12px;border-radius:14px;border:1px solid var(--line);background:var(--bg);color:var(--fg);outline:none;margin:8px 0 12px}
-.card b svg[data-i="lock"]{fill:none;color:var(--muted)}
+.card b .bi[data-i="lock"]{fill:none;color:var(--muted)}
 #exp .ri,#trb .ri{background:color-mix(in srgb,var(--accent) 16%,transparent);color:var(--accent)}
 #sbar{position:absolute;top:10px;left:50%;transform:translate(-50%,-8px);display:flex;gap:2px;background:var(--card);border:1px solid var(--line);border-radius:22px;padding:4px;box-shadow:0 8px 24px rgba(0,0,0,.18);opacity:0;pointer-events:none;transition:.16s;z-index:4}
 #sbar.on{opacity:1;transform:translate(-50%,0);pointer-events:auto}
 #sbar button{display:flex;align-items:center;gap:6px;border:0;background:none;padding:8px 12px;border-radius:18px;font-size:13px;cursor:pointer;white-space:nowrap}
-#sbar button:first-child{background:var(--accent);color:var(--accent-fg)}#sbar button:active{transform:scale(.95)}#sbar svg{width:15px;height:15px}
+#sbar button:first-child{background:var(--accent);color:var(--accent-fg)}#sbar button:active{transform:scale(.95)}#sbar .bi{width:15px;height:15px;font-size:15px}
 #csheet .panel{height:80%;display:flex;flex-direction:column;padding:0;max-height:none}
 .ch{display:flex;align-items:center;padding:12px 8px 8px 18px;border-bottom:1px solid var(--line)}.ch b{flex:1;font-size:16px}
 #cm{flex:1;overflow:auto;padding:12px 14px;display:flex;flex-direction:column;gap:10px}
@@ -40,7 +44,7 @@ box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:en
 *{-webkit-tap-highlight-color:transparent;box-sizing:border-box}
 html,body{height:100%;margin:0}
 body{background:var(--bg);color:var(--fg);font:16px/1.5 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;overflow:hidden}
-svg.i{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;flex:none}
+.i{display:inline-flex;align-items:center;justify-content:center;width:20px;height:20px;font-size:20px;line-height:1;flex:none;vertical-align:middle}
 button{font:inherit;color:inherit}
 .view{position:absolute;inset:0;display:flex;flex-direction:column;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);background:var(--bg);animation:in .2s}
 .view[hidden]{display:none}
@@ -50,7 +54,7 @@ body.offl .view{padding-top:calc(env(safe-area-inset-top,0px) + 28px)}
 .icon{width:40px;height:40px;border:0;border-radius:50%;background:transparent;display:grid;place-items:center;cursor:pointer;flex:none;transition:background .15s,transform .15s}
 .icon:active{background:var(--line);transform:scale(.9)}
 #off{position:fixed;top:0;left:0;right:0;z-index:30;background:var(--fg);color:var(--bg);font-size:12px;text-align:center;padding:calc(env(safe-area-inset-top,0px) + 5px) 10px 5px;display:none;align-items:center;justify-content:center;gap:6px}
-body.offl #off{display:flex}#off svg{width:14px;height:14px}
+body.offl #off{display:flex}#off .bi{width:14px;height:14px;font-size:14px}
 .top{padding:14px 16px 6px}
 .tr{display:flex;align-items:center}.tr h1{flex:1;margin:0;font-size:28px;letter-spacing:-.5px}
 .top p{margin:0 0 10px;color:var(--muted);font-size:13px}
@@ -72,14 +76,14 @@ body.offl #off{display:flex}#off svg{width:14px;height:14px}
 .card:active{transform:scale(.97)}.card.on{border-color:var(--accent)}
 .card b{display:flex;align-items:center;gap:5px;font-size:15px}
 .card b span{overflow:hidden;white-space:nowrap;text-overflow:ellipsis}
-.card b svg{width:13px;height:13px;color:var(--accent);fill:var(--accent)}
+.card b .bi{width:13px;height:13px;font-size:13px;color:var(--accent)}
 .card>span{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;color:var(--muted);font-size:14px;margin-top:2px}
 .grid .card>span{-webkit-line-clamp:5}
 .card small{display:block;color:var(--muted);font-size:11.5px;margin-top:6px;opacity:.85}
-.ck{position:absolute;right:9px;top:9px;width:22px;height:22px;border-radius:50%;background:var(--accent);color:#fff;display:grid;place-items:center}.ck svg{width:14px;height:14px;stroke-width:3}
+.ck{position:absolute;right:9px;top:9px;width:22px;height:22px;border-radius:50%;background:var(--accent);color:#fff;display:grid;place-items:center}.ck .bi{width:14px;height:14px;font-size:14px}
 .empty{margin:auto;text-align:center;color:var(--muted);font-size:14px;padding:30px;grid-column:1/-1}
 .fab{position:absolute;right:18px;bottom:calc(20px + env(safe-area-inset-bottom,0px));width:54px;height:54px;border-radius:18px;border:0;background:var(--accent);color:var(--accent-fg);display:grid;place-items:center;box-shadow:0 8px 22px rgba(0,0,0,.22);cursor:pointer;transition:transform .15s}
-.fab:active{transform:scale(.9)}.fab svg{width:24px;height:24px}
+.fab:active{transform:scale(.9)}.fab .bi{width:24px;height:24px;font-size:24px}
 #acts{position:absolute;left:14px;right:14px;bottom:calc(16px + env(safe-area-inset-bottom,0px));background:var(--card);border:1px solid var(--line);border-radius:20px;box-shadow:0 8px 26px rgba(0,0,0,.18);padding:6px;gap:4px}
 #acts button{flex:1;border:0;background:none;display:flex;flex-direction:column;align-items:center;gap:2px;font-size:12px;padding:8px;border-radius:14px;cursor:pointer}
 #acts button:active{background:var(--line)}#acts .d{color:var(--rec)}
@@ -90,7 +94,7 @@ header{display:flex;align-items:center;gap:2px;padding:8px 8px 8px 6px;border-bo
 #menu.open{opacity:1;transform:none;pointer-events:auto}
 #menu::before{content:"";position:absolute;top:-6px;right:15px;width:11px;height:11px;background:var(--card);border-left:1px solid var(--line);border-top:1px solid var(--line);transform:rotate(45deg);border-top-left-radius:3px}
 #menu button{display:flex;width:100%;align-items:center;gap:10px;border:0;background:transparent;font-size:14px;padding:9px 10px;border-radius:9px;cursor:pointer;text-align:left}
-#menu button:active{background:var(--line)}#menu button svg{width:17px;height:17px}
+#menu button:active{background:var(--line)}#menu button .bi{width:17px;height:17px;font-size:17px}
 #menu .up{color:var(--accent);font-weight:600}#menu .del{color:var(--rec)}
 #menu hr{border:0;border-top:1px solid var(--line);margin:3px 4px}
 main{flex:1;display:flex;min-height:0;position:relative}
@@ -137,6 +141,55 @@ input[type=range]{width:100%;margin-top:10px;accent-color:var(--accent)}
 #sys{width:100%;margin-top:10px;min-height:96px;resize:vertical;background:var(--bg);color:var(--fg);border:1px solid var(--line);border-radius:12px;padding:10px;font:inherit;font-size:14px;outline:none}
 .wipe{width:100%;border:0;background:none;display:flex;align-items:center;gap:14px;text-align:left;padding:0;cursor:pointer;color:var(--rec)}
 .wipe .ri{background:color-mix(in srgb,var(--rec) 14%,transparent);color:var(--rec)}
+
+/* Prompt Notes 1.1 — responsive, accessible layout foundation */
+*,*::before,*::after{box-sizing:border-box}
+html,body{width:100%;min-width:320px;min-height:100%;overscroll-behavior:none}
+body{-webkit-tap-highlight-color:transparent;touch-action:pan-y}
+.view{width:100%;max-width:100vw;height:100vh;height:100dvh;min-height:0;overflow:hidden}
+#list,.sc,.panel,.chatbody{overscroll-behavior:contain;-webkit-overflow-scrolling:touch}
+input,textarea,select,button{max-width:100%;min-width:0}
+input,textarea{font-size:16px}
+button{touch-action:manipulation}
+button:focus-visible,input:focus-visible,textarea:focus-visible,select:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.icon{width:44px;min-width:44px;height:44px;min-height:44px;display:inline-flex;align-items:center;justify-content:center}
+.icon .bi{font-size:19px}
+.fab{width:56px;height:56px;min-width:56px;min-height:56px;right:calc(18px + env(safe-area-inset-right,0px));bottom:calc(18px + env(safe-area-inset-bottom,0px))}
+#list{min-height:0;min-width:0;overflow:auto;padding-bottom:calc(92px + env(safe-area-inset-bottom,0px))}
+#list.grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.card{min-width:0;overflow:hidden;overflow-wrap:anywhere}
+.card b{min-width:0}
+.card b span{min-width:0}
+#editor main{min-height:0;flex:1;display:flex;flex-direction:column}
+#note{width:100%;max-width:100%;min-height:180px;flex:1;resize:none;overflow:auto;line-height:1.65;padding-bottom:24px}
+#title{flex:1;width:100%;min-width:0}
+.search{min-width:0}
+.search input{width:100%;min-width:0}
+.row{flex-wrap:wrap}
+.row>*{min-width:0}
+.sheet{padding-left:env(safe-area-inset-left,0px);padding-right:env(safe-area-inset-right,0px)}
+.panel{max-width:640px;width:100%;max-height:min(82dvh,760px);overflow:auto}
+.grp{max-width:760px}
+.sc{min-height:0;overflow:auto;padding-bottom:calc(36px + env(safe-area-inset-bottom,0px))}
+.bi{font-weight:400}
+.ri .bi{font-size:18px}
+#bar{max-width:min(92vw,520px);white-space:normal}
+@media(max-width:380px){
+  .view header{gap:6px}
+  #list.grid{grid-template-columns:minmax(0,1fr)}
+  .card{padding:11px 12px}
+  .sc h1{font-size:27px}
+  .panel{border-radius:18px 18px 0 0;padding-left:14px;padding-right:14px}
+}
+@media(min-width:700px){
+  .view{max-width:760px;left:0;right:0;margin-left:auto;margin-right:auto;border-left:1px solid var(--line);border-right:1px solid var(--line)}
+  #list.grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .panel{border-radius:22px 22px 0 0}
+}
+@media(prefers-reduced-motion:reduce){
+  *,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;scroll-behavior:auto!important;transition-duration:.01ms!important}
+}
+
 </style>
 <script>
 (function(){
@@ -154,89 +207,89 @@ input[type=range]{width:100%;margin-top:10px;accent-color:var(--accent)}
 </script>
 </head>
 <body>
-<div id="off"><svg class="i" data-i="off"></svg>Offline. You can still read and edit; AI and voice are paused.</div>
+<div id="off"><i class="bi bi-wifi-off i" data-i="off" aria-hidden="true"></i>Offline. You can still read and edit; AI and voice are paused.</div>
 
 <section class="view" id="home">
   <div class="top">
     <div class="tr"><h1>Prompts</h1>
-      <button class="icon" id="vt" aria-label="Layout"><svg class="i" data-i="grid"></svg></button>
-      <button class="icon" id="sb" aria-label="Select"><svg class="i" data-i="sel"></svg></button>
-      <button class="icon" id="gs" aria-label="Settings"><svg class="i" data-i="gear"></svg></button>
+      <button class="icon" id="vt" aria-label="Layout"><i class="bi bi-grid i" data-i="grid" aria-hidden="true"></i></button>
+      <button class="icon" id="sb" aria-label="Select"><i class="bi bi-check2-circle i" data-i="sel" aria-hidden="true"></i></button>
+      <button class="icon" id="gs" aria-label="Settings"><i class="bi bi-gear i" data-i="gear" aria-hidden="true"></i></button>
     </div>
     <p id="sub"></p>
-    <label class="search"><svg class="i" data-i="search"></svg><input id="q" placeholder="Search prompts" type="search"></label>
+    <label class="search"><i class="bi bi-search i" data-i="search" aria-hidden="true"></i><input id="q" placeholder="Search prompts" type="search"></label>
     <div id="chips"></div>
     <button class="link" id="delF" hidden>Delete folder</button>
   </div>
-  <div id="selbar"><button class="icon" id="sx" aria-label="Cancel"><svg class="i" data-i="x"></svg></button><b id="sc2">0 selected</b><button class="all" id="sa">Select all</button></div>
+  <div id="selbar"><button class="icon" id="sx" aria-label="Cancel"><i class="bi bi-x-lg i" data-i="x" aria-hidden="true"></i></button><b id="sc2">0 selected</b><button class="all" id="sa">Select all</button></div>
   <div id="list"></div>
-  <button class="fab" id="fab" aria-label="New prompt"><svg class="i" data-i="plus"></svg></button>
+  <button class="fab" id="fab" aria-label="New prompt"><i class="bi bi-plus-lg i" data-i="plus" aria-hidden="true"></i></button>
   <div id="acts">
-    <button id="aPin"><svg class="i" data-i="pin"></svg>Pin</button>
-    <button id="aMove"><svg class="i" data-i="folder"></svg>Move</button>
-    <button id="aDel" class="d"><svg class="i" data-i="trash"></svg>Delete</button>
+    <button id="aPin"><i class="bi bi-pin-angle i" data-i="pin" aria-hidden="true"></i>Pin</button>
+    <button id="aMove"><i class="bi bi-folder2 i" data-i="folder" aria-hidden="true"></i>Move</button>
+    <button id="aDel" class="d"><i class="bi bi-trash3 i" data-i="trash" aria-hidden="true"></i>Delete</button>
   </div>
 </section>
 
 <section class="view" id="editor" hidden>
   <header>
-    <button class="icon" id="back" aria-label="Back"><svg class="i" data-i="back"></svg></button>
+    <button class="icon" id="back" aria-label="Back"><i class="bi bi-arrow-left i" data-i="back" aria-hidden="true"></i></button>
     <input id="title" placeholder="Untitled prompt" maxlength="80" aria-label="Note title">
-    <button class="icon" id="dots" aria-label="More options"><svg class="i" data-i="dots"></svg></button>
+    <button class="icon" id="dots" aria-label="More options"><i class="bi bi-three-dots-vertical i" data-i="dots" aria-hidden="true"></i></button>
     <div id="menu" role="menu">
-      <button class="up" id="mUp"><svg class="i" data-i="spark"></svg>Upgrade prompt</button>
-      <button id="mRun"><svg class="i" data-i="play"></svg>Run prompt</button>
-      <button id="mCopy"><svg class="i" data-i="copy"></svg>Copy prompt</button>
-      <button id="mShare"><svg class="i" data-i="share"></svg>Share</button>
-      <button id="mPin"><svg class="i" data-i="pin"></svg><span>Pin</span></button>
-      <button id="mDup"><svg class="i" data-i="filePlus"></svg>Duplicate</button>
-      <button id="mTag"><svg class="i" data-i="tag"></svg>Color &amp; tags</button>
-      <button id="mLock"><svg class="i" data-i="lock"></svg><span>Lock note</span></button>
+      <button class="up" id="mUp"><i class="bi bi-stars i" data-i="spark" aria-hidden="true"></i>Upgrade prompt</button>
+      <button id="mRun"><i class="bi bi-play-fill i" data-i="play" aria-hidden="true"></i>Run prompt</button>
+      <button id="mCopy"><i class="bi bi-copy i" data-i="copy" aria-hidden="true"></i>Copy prompt</button>
+      <button id="mShare"><i class="bi bi-share i" data-i="share" aria-hidden="true"></i>Share</button>
+      <button id="mPin"><i class="bi bi-pin-angle i" data-i="pin" aria-hidden="true"></i><span>Pin</span></button>
+      <button id="mDup"><i class="bi bi-file-earmark-plus i" data-i="filePlus" aria-hidden="true"></i>Duplicate</button>
+      <button id="mTag"><i class="bi bi-tag i" data-i="tag" aria-hidden="true"></i>Color &amp; tags</button>
+      <button id="mLock"><i class="bi bi-lock i" data-i="lock" aria-hidden="true"></i><span>Lock note</span></button>
       <hr>
-      <button class="del" id="mDel"><svg class="i" data-i="trash"></svg>Delete note</button>
+      <button class="del" id="mDel"><i class="bi bi-trash3 i" data-i="trash" aria-hidden="true"></i>Delete note</button>
     </div>
   </header>
   <main>
     <textarea id="note" placeholder="Start typing your prompt…"></textarea>
-    <button id="askb" aria-label="Ask Axiom"><svg class="i" data-i="spark"></svg></button><div id="sbar"><button id="sbAsk"><svg class="i" data-i="spark"></svg>Ask AI</button><button id="sbRw"><svg class="i" data-i="play"></svg>Rewrite</button><button id="sbCp"><svg class="i" data-i="copy"></svg>Copy</button></div>
+    <button id="askb" aria-label="Ask Axiom"><i class="bi bi-stars i" data-i="spark" aria-hidden="true"></i></button><div id="sbar"><button id="sbAsk"><i class="bi bi-stars i" data-i="spark" aria-hidden="true"></i>Ask AI</button><button id="sbRw"><i class="bi bi-play-fill i" data-i="play" aria-hidden="true"></i>Rewrite</button><button id="sbCp"><i class="bi bi-copy i" data-i="copy" aria-hidden="true"></i>Copy</button></div>
     <div id="pill"></div>
-    <button id="mic" aria-label="Dictate"><svg class="i" data-i="mic"></svg></button>
+    <button id="mic" aria-label="Dictate"><i class="bi bi-mic i" data-i="mic" aria-hidden="true"></i></button>
   </main>
   <footer><span id="count">0 words</span><span id="saved"></span></footer>
 </section>
 
 <section class="view" id="settings" hidden>
-  <header><button class="icon" id="sBack" aria-label="Back"><svg class="i" data-i="back"></svg></button></header>
+  <header><button class="icon" id="sBack" aria-label="Back"><i class="bi bi-arrow-left i" data-i="back" aria-hidden="true"></i></button></header>
   <div class="sc">
     <h1>Settings</h1>
     <h3>Display</h3>
     <div class="grp">
-      <div class="r2"><div class="rh"><div class="ri"><svg class="i" data-i="sun"></svg></div><div class="rt"><b>Theme</b><small>Follow system or pick one</small></div></div><div class="seg" data-k="theme" data-o="system,light,dark,black"></div></div>
-      <div class="r2"><div class="rh"><div class="ri"><svg class="i" data-i="spark"></svg></div><div class="rt"><b>Accent color</b></div></div><div class="sws" data-k="accent"></div></div>
-      <div class="r2"><div class="rh"><div class="ri"><svg class="i" data-i="list"></svg></div><div class="rt"><b>Text size</b><small id="fsv"></small></div></div><input type="range" min="14" max="22" step="1" id="fs"></div>
-      <div class="r2"><div class="rh"><div class="ri"><svg class="i" data-i="grid"></svg></div><div class="rt"><b>Layout</b></div></div><div class="seg" data-k="view" data-o="list,grid"></div></div>
-      <div class="r2"><div class="rh"><div class="ri"><svg class="i" data-i="pin"></svg></div><div class="rt"><b>Sort by</b></div></div><div class="seg" data-k="sort" data-o="recent,old,az"></div></div>
+      <div class="r2"><div class="rh"><div class="ri"><i class="bi bi-sun i" data-i="sun" aria-hidden="true"></i></div><div class="rt"><b>Theme</b><small>Follow system or pick one</small></div></div><div class="seg" data-k="theme" data-o="system,light,dark,black"></div></div>
+      <div class="r2"><div class="rh"><div class="ri"><i class="bi bi-stars i" data-i="spark" aria-hidden="true"></i></div><div class="rt"><b>Accent color</b></div></div><div class="sws" data-k="accent"></div></div>
+      <div class="r2"><div class="rh"><div class="ri"><i class="bi bi-list-ul i" data-i="list" aria-hidden="true"></i></div><div class="rt"><b>Text size</b><small id="fsv"></small></div></div><input type="range" min="14" max="22" step="1" id="fs"></div>
+      <div class="r2"><div class="rh"><div class="ri"><i class="bi bi-grid i" data-i="grid" aria-hidden="true"></i></div><div class="rt"><b>Layout</b></div></div><div class="seg" data-k="view" data-o="list,grid"></div></div>
+      <div class="r2"><div class="rh"><div class="ri"><i class="bi bi-pin-angle i" data-i="pin" aria-hidden="true"></i></div><div class="rt"><b>Sort by</b></div></div><div class="seg" data-k="sort" data-o="recent,old,az"></div></div>
     </div>
     <h3>Behavior</h3>
     <div class="grp">
-      <div class="r2 rh"><div class="ri"><svg class="i" data-i="dots"></svg></div><div class="rt"><b>Haptic feedback</b><small>Vibrate on taps and actions</small></div><button class="sw" data-k="haptics" aria-label="Haptics"></button></div>
-      <div class="r2"><div class="rh"><div class="ri"><svg class="i" data-i="dots"></svg></div><div class="rt"><b>Vibration strength</b><small>Device default uses your phone’s own vibration settings</small></div></div><div class="seg" data-k="hs" data-o="soft,device,strong"></div></div>
-      <div class="r2 rh"><div class="ri"><svg class="i" data-i="spark"></svg></div><div class="rt"><b>Auto-generate titles</b><small>After dictation, if untitled</small></div><button class="sw" data-k="auto" aria-label="Auto titles"></button></div>
+      <div class="r2 rh"><div class="ri"><i class="bi bi-three-dots-vertical i" data-i="dots" aria-hidden="true"></i></div><div class="rt"><b>Haptic feedback</b><small>Vibrate on taps and actions</small></div><button class="sw" data-k="haptics" aria-label="Haptics"></button></div>
+      <div class="r2"><div class="rh"><div class="ri"><i class="bi bi-three-dots-vertical i" data-i="dots" aria-hidden="true"></i></div><div class="rt"><b>Vibration strength</b><small>Device default uses your phone’s own vibration settings</small></div></div><div class="seg" data-k="hs" data-o="soft,device,strong"></div></div>
+      <div class="r2 rh"><div class="ri"><i class="bi bi-stars i" data-i="spark" aria-hidden="true"></i></div><div class="rt"><b>Auto-generate titles</b><small>After dictation, if untitled</small></div><button class="sw" data-k="auto" aria-label="Auto titles"></button></div>
     </div>
     <h3>AI</h3>
     <div class="grp">
-      <div class="r2"><div class="rh"><div class="ri"><svg class="i" data-i="spark"></svg></div><div class="rt"><b>System prompt</b><small>Standing instructions added to every AI request</small></div></div><textarea id="sys" placeholder="e.g. Keep prompts concise. Always ask for a table when comparing."></textarea></div>
+      <div class="r2"><div class="rh"><div class="ri"><i class="bi bi-stars i" data-i="spark" aria-hidden="true"></i></div><div class="rt"><b>System prompt</b><small>Standing instructions added to every AI request</small></div></div><textarea id="sys" placeholder="e.g. Keep prompts concise. Always ask for a table when comparing."></textarea></div>
     </div>
     <h3>Axiom 1.6</h3>
     <div class="grp">
-      <div class="r2 rh"><div class="ri"><svg class="i" data-i="spark"></svg></div><div class="rt"><b>Show reasoning</b><small>See how Axiom thinks before it answers</small></div><button class="sw" data-k="rs" aria-label="Show reasoning"></button></div>
-      <div class="r2"><div class="rh"><div class="ri"><svg class="i" data-i="play"></svg></div><div class="rt"><b>Reasoning depth</b><small>Deep thinks longest and takes more time</small></div></div><div class="seg" data-k="depth" data-o="quick,default,complex"></div></div>
+      <div class="r2 rh"><div class="ri"><i class="bi bi-stars i" data-i="spark" aria-hidden="true"></i></div><div class="rt"><b>Show reasoning</b><small>See how Axiom thinks before it answers</small></div><button class="sw" data-k="rs" aria-label="Show reasoning"></button></div>
+      <div class="r2"><div class="rh"><div class="ri"><i class="bi bi-play-fill i" data-i="play" aria-hidden="true"></i></div><div class="rt"><b>Reasoning depth</b><small>Deep thinks longest and takes more time</small></div></div><div class="seg" data-k="depth" data-o="quick,default,complex"></div></div>
     </div>
     <h3>Data</h3>
     <div class="grp">
-      <div class="r2"><button class="wipe" id="exp" style="color:var(--fg)"><div class="ri"><svg class="i" data-i="download"></svg></div><div class="rt"><b>Export all as Markdown</b><small>Saves a .md file of unlocked prompts</small></div></button></div>
-      <div class="r2"><button class="wipe" id="trb" style="color:var(--fg)"><div class="ri"><svg class="i" data-i="trash"></svg></div><div class="rt"><b id="tc">Trash</b><small>Deleted prompts stay for 30 days</small></div></button></div>
-      <div class="r2"><button class="wipe" id="wipe"><div class="ri"><svg class="i" data-i="trash"></svg></div><div class="rt"><b id="wt">Delete all prompts</b><small>Stored only on this device</small></div></button></div>
+      <div class="r2"><button class="wipe" id="exp" style="color:var(--fg)"><div class="ri"><i class="bi bi-download i" data-i="download" aria-hidden="true"></i></div><div class="rt"><b>Export all as Markdown</b><small>Saves a .md file of unlocked prompts</small></div></button></div>
+      <div class="r2"><button class="wipe" id="trb" style="color:var(--fg)"><div class="ri"><i class="bi bi-trash3 i" data-i="trash" aria-hidden="true"></i></div><div class="rt"><b id="tc">Trash</b><small>Deleted prompts stay for 30 days</small></div></button></div>
+      <div class="r2"><button class="wipe" id="wipe"><div class="ri"><i class="bi bi-trash3 i" data-i="trash" aria-hidden="true"></i></div><div class="rt"><b id="wt">Delete all prompts</b><small>Stored only on this device</small></div></button></div>
     </div>
   </div>
 </section>
@@ -248,111 +301,52 @@ input[type=range]{width:100%;margin-top:10px;accent-color:var(--accent)}
 <div class="sheet" id="msheet"><div class="panel"><h2>Move to folder</h2><div class="mv" id="mv"></div></div></div>
 <div class="sheet" id="tsheet"><div class="panel"><h2>Trash · kept for 30 days</h2><div class="mv" id="tl"></div><div class="row" style="margin-top:12px"><button id="tEmpty">Empty trash</button><button id="tClose">Close</button></div></div></div>
 <div class="sheet" id="psheet"><div class="panel"><h2 id="pt">Enter PIN</h2><input id="pin" type="password" inputmode="numeric" maxlength="8" autocomplete="off"><div class="row"><button class="primary" id="pOk">OK</button><button id="pNo">Cancel</button></div></div></div>
-<div class="sheet" id="csheet"><div class="panel"><div class="ch"><b>Axiom 1.6<small style="display:block;font-weight:400;font-size:11px;color:var(--muted)">Reasoning · replies in Markdown</small></b><button class="icon" id="cn" aria-label="New chat"><svg class="i" data-i="filePlus"></svg></button><button class="icon" id="cc" aria-label="Copy chat"><svg class="i" data-i="copy"></svg></button><button class="icon" id="cx" aria-label="Close"><svg class="i" data-i="x"></svg></button></div><div id="cm"></div><div class="ci"><textarea id="ci" rows="1" placeholder="Reply…"></textarea><button id="csend" aria-label="Send"><svg class="i" data-i="send"></svg></button></div></div></div>
+<div class="sheet" id="csheet"><div class="panel"><div class="ch"><b>Axiom 1.6<small style="display:block;font-weight:400;font-size:11px;color:var(--muted)">Reasoning · replies in Markdown</small></b><button class="icon" id="cn" aria-label="New chat"><i class="bi bi-file-earmark-plus i" data-i="filePlus" aria-hidden="true"></i></button><button class="icon" id="cc" aria-label="Copy chat"><i class="bi bi-copy i" data-i="copy" aria-hidden="true"></i></button><button class="icon" id="cx" aria-label="Close"><i class="bi bi-x-lg i" data-i="x" aria-hidden="true"></i></button></div><div id="cm"></div><div class="ci"><textarea id="ci" rows="1" placeholder="Reply…"></textarea><button id="csend" aria-label="Send"><i class="bi bi-send i" data-i="send" aria-hidden="true"></i></button></div></div></div>
 <div class="sheet" id="tgsheet"><div class="panel"><h2>Color &amp; tags</h2><div class="sws" id="tgc"></div><input id="tgi" placeholder="Tags, separated by commas" autocomplete="off"><div class="row"><button class="primary" id="tgOk">Done</button></div></div></div>
 <div id="bar"><i></i><span id="bm"></span><button id="ba" hidden></button></div>
 
 <script>
 const $=id=>document.getElementById(id), qa=s=>[...document.querySelectorAll(s)];
 const ICONS={
-search:'<circle cx="11" cy="11" r="7"/><path d="M20 20l-4-4"/>',plus:'<path d="M12 5v14M5 12h14"/>',back:'<path d="M15 18l-6-6 6-6"/>',
-dots:'<circle cx="12" cy="5" r="1.6" fill="currentColor"/><circle cx="12" cy="12" r="1.6" fill="currentColor"/><circle cx="12" cy="19" r="1.6" fill="currentColor"/>',
-spark:'<path d="M11 3l1.9 5.1L18 10l-5.1 1.9L11 17l-1.9-5.1L4 10l5.1-1.9z"/><path d="M19 15l.8 2.2L22 18l-2.2.8L19 21l-.8-2.2L16 18l2.2-.8z"/>',
-copy:'<rect x="9" y="9" width="11" height="11" rx="2.5"/><path d="M5 15V6.5A2.5 2.5 0 0 1 7.5 4H15"/>',
-filePlus:'<path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5M12 12v6M9 15h6"/>',
-trash:'<path d="M4 7h16M10 11v6M14 11v6M6 7l1 12a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2l1-12M9 7V4h6v3"/>',
-mic:'<rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3"/>',
-stop:'<rect x="6.5" y="6.5" width="11" height="11" rx="2.5" fill="currentColor"/>',
-grid:'<rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/>',
-list:'<path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01"/>',
-check:'<path d="M5 12.5l4.5 4.5L19 7.5"/>',sel:'<circle cx="12" cy="12" r="9"/><path d="M8 12.5l3 3 5-6"/>',
-folder:'<path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>',
-pin:'<path d="M12 17v5M8 3h8l-1 6 3 4H6l3-4z"/>',x:'<path d="M6 6l12 12M18 6L6 18"/>',
-off:'<path d="M2 8.8a15 15 0 0 1 4-2.3M22 8.8a15 15 0 0 0-9-3.7M5 12.9a10 10 0 0 1 5-2.6M19 12.9a10 10 0 0 0-2-1.5M8.5 16.4a5 5 0 0 1 7 0M12 20h.01M2 2l20 20"/>',
-sun:'<circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/>',
-lock:'<rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/>',share:'<circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><path d="M8.6 10.7l6.8-4M8.6 13.3l6.8 4"/>',play:'<path d="M7 4l13 8-13 8z"/>',send:'<path d="M22 2L11 13M22 2l-7 20-4-9-9-4z"/>',tag:'<path d="M3 12V4h8l10 10-8 8z"/><circle cx="7.5" cy="8.5" r="1"/>',download:'<path d="M12 4v11M7 11l5 5 5-5M5 20h14"/>',
-gear:'<path d="M12.2 2h-.4a2 2 0 0 0-2 2v.2a2 2 0 0 1-1 1.7l-.4.2a2 2 0 0 1-2 0l-.2-.1a2 2 0 0 0-2.7.7l-.2.4a2 2 0 0 0 .7 2.7l.2.1a2 2 0 0 1 1 1.7v.5a2 2 0 0 1-1 1.7l-.2.1a2 2 0 0 0-.7 2.7l.2.4a2 2 0 0 0 2.7.7l.2-.1a2 2 0 0 1 2 0l.4.2a2 2 0 0 1 1 1.7V20a2 2 0 0 0 2 2h.4a2 2 0 0 0 2-2v-.2a2 2 0 0 1 1-1.7l.4-.2a2 2 0 0 1 2 0l.2.1a2 2 0 0 0 2.7-.7l.2-.4a2 2 0 0 0-.7-2.7l-.2-.1a2 2 0 0 1-1-1.7v-.5a2 2 0 0 1 1-1.7l.2-.1a2 2 0 0 0 .7-2.7l-.2-.4a2 2 0 0 0-2.7-.7l-.2.1a2 2 0 0 1-2 0l-.4-.2a2 2 0 0 1-1-1.7V4a2 2 0 0 0-2-2z"/><circle cx="12" cy="12" r="3"/>'};
-function icons(r){(r||document).querySelectorAll('svg[data-i]').forEach(s=>{s.setAttribute('viewBox','0 0 24 24');s.innerHTML=ICONS[s.dataset.i]})}
-function ic(n){const s=document.createElementNS('http://www.w3.org/2000/svg','svg');s.setAttribute('class','i');s.dataset.i=n;icons(s.parentNode||{querySelectorAll:()=>[s]});return s}
-function setIcon(b,n){const s=b.querySelector('svg');s.dataset.i=n;s.innerHTML=ICONS[n]}
-icons();
-
-function ld(k,d){try{return JSON.parse(localStorage.getItem(k))||d}catch(e){return d}}
-function sv(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}
-let S=Object.assign({theme:'system',accent:'#c96442',fs:16,haptics:true,hs:'device',auto:true,rs:true,depth:'default',view:'list',sort:'recent',sys:''},ld('pn_set',{}));
-let notes=ld('pn_notes',[]),folders=ld('pn_folders',[]);
-let trash=ld('pn_trash',[]).filter(t=>Date.now()-t.d<2592e6);
-const save=()=>sv('pn_notes',notes), uid=()=>Date.now().toString(36)+Math.random().toString(36).slice(2,5);
-function buzz(p){try{if(!S.haptics||!navigator.vibrate)return;const m={soft:.5,device:1,strong:1.8}[S.hs]||1;p=p||10;navigator.vibrate(Array.isArray(p)?p.map(x=>Math.max(1,Math.round(x*m))):Math.max(1,Math.round(p*m)))}catch(e){}}
-let bt;function say(m,o={}){const b=$('bar'),a=$('ba');$('bm').textContent=m;b.className='show'+(o.err?' err':'');a.hidden=!o.act;a.textContent=o.act||'';a.onclick=()=>{b.className='';o.fn&&o.fn()};clearTimeout(bt);bt=setTimeout(()=>b.className='',o.act?4500:2200);if(o.err)buzz(50)}
-function apply(){const r=document.documentElement;S.theme==='system'?r.removeAttribute('data-theme'):r.setAttribute('data-theme',S.theme);r.style.setProperty('--accent',S.accent);r.style.setProperty('--accent-fg','#fff');r.style.setProperty('--fs',S.fs+'px')}
-apply();
-function show(id){qa('.view').forEach(v=>v.hidden=v.id!==id)}
-const offline=()=>!navigator.onLine;
-function net(){document.body.classList.toggle('offl',offline())}
-addEventListener('online',()=>{net();say('Back online')});addEventListener('offline',net);net();
-
-/* ---------- dashboard ---------- */
-let fol='',sel=new Set(),selMode=false,adding=false,lp=0,pt;
-const fmt=t=>new Date(t).toLocaleDateString(undefined,{month:'short',day:'numeric'});
-function rows(){
-  let r=notes.filter(n=>!fol||n.f===fol);const q=$('q').value.trim().toLowerCase();
-  if(q)r=r.filter(n=>(n.title+' '+(n.l?'':n.body)+' '+(n.g||[]).map(t=>'#'+t).join(' ')).toLowerCase().includes(q));
-  const so={recent:(a,b)=>b.t-a.t,old:(a,b)=>a.t-b.t,az:(a,b)=>(a.title||'~').localeCompare(b.title||'~')}[S.sort];
-  return r.sort((a,b)=>(b.p?1:0)-(a.p?1:0)||so(a,b));
-}
-function render(a){
-  $('home').classList.toggle('sel',selMode);setIcon($('vt'),S.view==='grid'?'list':'grid');
-  const ch=$('chips');ch.innerHTML='';
-  const mk=(t,on,fn)=>{const b=document.createElement('button');b.className='chip'+(on?' on':'');b.textContent=t;b.onclick=fn;ch.appendChild(b)};
-  mk('All',!fol,()=>{fol='';buzz(8);render(1)});
-  folders.forEach(f=>mk(f+' · '+notes.filter(n=>n.f===f).length,fol===f,()=>{fol=f;buzz(8);render(1)}));
-  if(adding){
-    const i=document.createElement('input');i.className='chip fin';i.placeholder='Folder name';ch.appendChild(i);setTimeout(()=>i.focus());
-    const fin=()=>{if(!adding)return;adding=false;const v=i.value.trim();if(v&&!folders.includes(v)){folders.push(v);sv('pn_folders',folders);fol=v;buzz([10,30,10])}render()};
-    i.onkeydown=e=>{if(e.key==='Enter')fin()};i.onblur=fin;
-  }else mk('+ Folder',false,()=>{adding=true;buzz(8);render()});
-  $('delF').hidden=!fol;$('delF').textContent='Delete folder';
-  const r=rows(),box=$('list');box.className=S.view==='grid'?'grid':'';box.innerHTML='';
-  $('sub').textContent=notes.length+(notes.length===1?' prompt':' prompts')+(fol?' · '+fol:'')+streakTxt();
-  $('sc2').textContent=sel.size+' selected';
-  if(!r.length){const d=document.createElement('div');d.className='empty';d.textContent=notes.length?'Nothing here yet.':'No prompts yet. Tap + to write your first one.';box.appendChild(d);return}
-  r.forEach((n,i)=>{
-    const c=document.createElement('button');c.className='card'+(sel.has(n.id)?' on':'');
-    if(a)c.style.animation='up .3s both '+Math.min(i,8)*30+'ms';
-    const h=document.createElement('b'),t=document.createElement('span');t.textContent=n.title||'Untitled prompt';if(n.l)h.appendChild(ic('lock'));if(n.p)h.appendChild(ic('pin'));h.appendChild(t);
-    const s=document.createElement('span');s.textContent=n.l?'Locked':(n.body||'Empty');
-    const m=document.createElement('small');m.textContent=(n.f?n.f+' · ':'')+fmt(n.t)+(n.g&&n.g.length?' · '+n.g.map(t=>'#'+t).join(' '):'');
-    c.append(h,s,m);
-    if(sel.has(n.id)){const k=document.createElement('div');k.className='ck';k.appendChild(ic('check'));c.appendChild(k)}
-    c.onpointerdown=()=>{lp=0;clearTimeout(pt);pt=setTimeout(()=>{lp=1;if(!selMode){buzz(25);selMode=true;sel.add(n.id);render()}},450)};
-    c.onpointerup=c.onpointerleave=c.onpointercancel=()=>clearTimeout(pt);
-    if(n.c)c.style.borderLeft='4px solid '+n.c;
-    let x0=0,y0=0,dx=0,sw=0;
-    c.addEventListener('touchstart',e=>{x0=e.touches[0].clientX;y0=e.touches[0].clientY;dx=0;sw=0},{passive:true});
-    c.addEventListener('touchmove',e=>{if(selMode)return;const mx=e.touches[0].clientX-x0,my=e.touches[0].clientY-y0;if(!sw&&Math.abs(mx)>12&&Math.abs(mx)>Math.abs(my)*1.5){sw=1;clearTimeout(pt)}if(sw){dx=mx;c.style.transform='translateX('+dx+'px)';c.style.opacity=1-Math.min(Math.abs(dx)/300,.5)}},{passive:true});
-    c.addEventListener('touchend',()=>{if(!sw)return;lp=1;c.style.transform='';c.style.opacity='';sw=0;if(dx>90){n.p=!n.p;save();buzz(15);render()}else if(dx<-90){del([n.id]);render()}});
-    c.onclick=()=>{if(lp){lp=0;return}buzz(8);if(selMode){sel.has(n.id)?sel.delete(n.id):sel.add(n.id);render()}else gate(n,()=>openNote(n.id))};
-    box.appendChild(c);
-  });
-}
-$('q').addEventListener('input',()=>render());
-$('vt').onclick=()=>{S.view=S.view==='grid'?'list':'grid';sv('pn_set',S);buzz(10);render(1);mark()};
-$('sb').onclick=()=>{buzz(15);selMode=true;sel.clear();render()};
-function exitSel(){selMode=false;sel.clear();render()}
-$('sx').onclick=()=>{buzz(8);exitSel()};
-$('sa').onclick=()=>{buzz(10);const r=rows();sel.size===r.length?sel.clear():r.forEach(n=>sel.add(n.id));render()};
-$('fab').onclick=()=>{buzz(12);const n={id:uid(),title:'',body:'',t:Date.now(),f:fol,p:false};notes.push(n);save();openNote(n.id);$('note').focus()};
-let dfArm=0;$('delF').onclick=()=>{if(!dfArm){dfArm=1;buzz(20);$('delF').textContent='Tap again to confirm';setTimeout(()=>{dfArm=0;if(fol)$('delF').textContent='Delete folder'},3000);return}
-  dfArm=0;notes.forEach(n=>{if(n.f===fol)n.f=''});folders=folders.filter(f=>f!==fol);sv('pn_folders',folders);save();fol='';buzz([20,40,20]);render(1);say('Folder deleted; prompts kept')};
-function del(ids){const rm=notes.filter(n=>ids.includes(n.id));notes=notes.filter(n=>!ids.includes(n.id));save();trash.push(...rm.map(n=>Object.assign({},n,{d:Date.now()})));sv('pn_trash',trash);buzz([20,40,20]);
-  say(rm.length+(rm.length>1?' prompts':' prompt')+' deleted',{act:'Undo',fn:()=>{trash=trash.filter(t=>!rm.some(r=>r.id===t.id));sv('pn_trash',trash);notes.push(...rm);save();render()}})}
-$('aDel').onclick=()=>{if(!sel.size)return say('Select something first',{err:1});del([...sel]);exitSel()};
-$('aPin').onclick=()=>{if(!sel.size)return say('Select something first',{err:1});const ns=notes.filter(n=>sel.has(n.id)),all=ns.every(n=>n.p);ns.forEach(n=>n.p=!all);save();buzz(15);exitSel()};
-$('aMove').onclick=()=>{
-  if(!sel.size)return say('Select something first',{err:1});buzz(10);const box=$('mv');box.innerHTML='';
-  ['',...folders].forEach(f=>{const b=document.createElement('button');b.append(ic('folder'),f||'No folder');b.onclick=()=>{notes.forEach(n=>{if(sel.has(n.id))n.f=f});save();buzz([10,30,10]);$('msheet').classList.remove('open');exitSel();say('Moved')};box.appendChild(b)});
-  $('msheet').classList.add('open');
+search:'search',
+plus:'plus-lg',
+back:'arrow-left',
+dots:'three-dots-vertical',
+spark:'stars',
+copy:'copy',
+filePlus:'file-earmark-plus',
+trash:'trash3',
+mic:'mic',
+stop:'stop-fill',
+grid:'grid',
+list:'list-ul',
+check:'check-lg',
+sel:'check2-circle',
+folder:'folder2',
+pin:'pin-angle',
+x:'x-lg',
+off:'wifi-off',
+sun:'sun',
+lock:'lock',
+share:'share',
+play:'play-fill',
+send:'send',
+tag:'tag',
+download:'download',
+gear:'gear',
+theme:'circle-half',
+accent:'palette',
+hs:'phone-vibrate',
+depth:'layers',
+view:'grid-3x3-gap',
+sort:'sort-down',
+sys:'type',
+month:'calendar-month',
+day:'calendar-day',
+fol:'folder',
+title:'type',
+body:'card-text',
+act:'lightbulb'
 };
 $('msheet').onclick=e=>{if(e.target.id==='msheet')$('msheet').classList.remove('open')};
 $('gs').onclick=()=>{buzz(10);show('settings');mark();tcUpd()};
@@ -599,5 +593,33 @@ $('cn').onclick=()=>{if(cbusy)return;chat=[];if(cur){cur.h=[];save()}$('cm').inn
 if(window.claude&&claude.use)claude.use('sample').then(s=>{sample=s}).catch(()=>{});
 mark();render(1);
 </script>
+
+<script>
+(function(){
+  if(window.PromptNotesNative&&typeof window.PromptNotesNative.checkForUpdates==='function'){
+    window.setInterval(function(){try{window.PromptNotesNative.checkForUpdates()}catch(e){}},300000);
+    window.addEventListener('promptnotesupdate',function(){
+      var editor=document.getElementById('editor');
+      if(editor&&!editor.hidden){
+        window.__pnUpdatePending=true;
+        if(typeof window.say==='function')window.say('An update is ready. Save your note and go back to apply it.');
+        var observer=new MutationObserver(function(){
+          if(editor.hidden&&window.__pnUpdatePending){
+            observer.disconnect();window.__pnUpdatePending=false;
+            window.setTimeout(function(){window.location.reload()},180);
+          }
+        });
+        observer.observe(editor,{attributes:true,attributeFilter:['hidden']});
+      }else{window.location.reload()}
+    });
+  }
+  if('serviceWorker' in navigator && location.protocol==='https:'){
+    window.addEventListener('load',function(){
+      navigator.serviceWorker.register('./sw.js').then(function(reg){reg.update()}).catch(function(){});
+    });
+  }
+})();
+</script>
+
 </body>
 </html>
