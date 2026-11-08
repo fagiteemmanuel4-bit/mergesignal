@@ -267,6 +267,11 @@ private fun MainShell(
     darkMode: Boolean, onDarkMode: (Boolean) -> Unit, onEnableNotifications: () -> Unit,
     onImportMarkdown: (String) -> Unit
 ) {
+    val view = LocalView.current
+    fun tap(action: () -> Unit) {
+        view.performHapticFeedback(HapticFeedbackConstants.CONTEXT_CLICK)
+        action()
+    }
     Scaffold(
         contentWindowInsets = WindowInsets.navigationBars,
         topBar = {
@@ -279,13 +284,13 @@ private fun MainShell(
         },
         bottomBar = {
             NavigationBar {
-                NavigationBarItem(selectedTab == "home", { onTab("home") }, icon = { Icon(Icons.Default.Home, null) }, label = { Text("Notes") })
-                NavigationBarItem(selectedTab == "ai", { onTab("ai") }, icon = { Icon(Icons.Default.AutoAwesome, null) }, label = { Text("AI Studio") })
-                NavigationBarItem(selectedTab == "settings", { onTab("settings") }, icon = { Icon(Icons.Default.Settings, null) }, label = { Text("Settings") })
+                NavigationBarItem(selectedTab == "home", { tap { onTab("home") } }, icon = { Icon(Icons.Default.Home, null) }, label = { Text("Notes") })
+                NavigationBarItem(selectedTab == "ai", { tap { onTab("ai") } }, icon = { Icon(Icons.Default.AutoAwesome, null) }, label = { Text("AI Studio") })
+                NavigationBarItem(selectedTab == "settings", { tap { onTab("settings") } }, icon = { Icon(Icons.Default.Settings, null) }, label = { Text("Settings") })
             }
         },
         floatingActionButton = {
-            if (selectedTab == "home") FloatingActionButton(onClick = onNew, containerColor = Brand, contentColor = Color.White) {
+            if (selectedTab == "home") FloatingActionButton(onClick = { tap(onNew) }, containerColor = Brand, contentColor = Color.White) {
                 Icon(Icons.Default.Add, contentDescription = "Create note")
             }
         }
