@@ -32,11 +32,23 @@ jobs:
           gradle-version: '8.7'
       - name: Run unit tests and build native debug APK
         run: gradle --no-daemon clean testDebugUnitTest assembleDebug
-      - name: Verify debug APK
+      - name: Apply compatibility signing and verify debug APK
         run: |
-          test -s app/build/outputs/apk/debug/app-debug.apk
-          $ANDROID_HOME/build-tools/35.0.0/apksigner verify --verbose app/build/outputs/apk/debug/app-debug.apk
-          $ANDROID_HOME/build-tools/35.0.0/aapt dump badging app/build/outputs/apk/debug/app-debug.apk | head -n 8
+          APK="app/build/outputs/apk/debug/app-debug.apk"
+          test -s "$APK"
+          # Re-sign with the CI debug key, explicitly enabling both legacy v1
+          # and modern v2 signatures for broader Android installer compatibility.
+          $ANDROID_HOME/build-tools/35.0.0/apksigner sign \
+            --ks "$HOME/.android/debug.keystore" \
+            --ks-key-alias androiddebugkey \
+            --ks-pass pass:android \
+            --key-pass pass:android \
+            --v1-signing-enabled true \
+            --v2-signing-enabled true \
+            --out app/build/outputs/apk/debug/app-debug-compatible.apk "$APK"
+          mv app/build/outputs/apk/debug/app-debug-compatible.apk "$APK"
+          $ANDROID_HOME/build-tools/35.0.0/apksigner verify --verbose "$APK"
+          $ANDROID_HOME/build-tools/35.0.0/aapt dump badging "$APK" | head -n 8
       - uses: actions/upload-artifact@v4
         with:
           name: prompt-notes-native-debug
