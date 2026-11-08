@@ -33,7 +33,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.layout.weight
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
@@ -216,6 +215,7 @@ private fun PromptNotesApp(activity: ComponentActivity) {
                 )
         }
     }
+}
 }
 
 @Composable
@@ -582,5 +582,4 @@ private fun SettingsScreen(
         Text("Prompt Notes", fontWeight = FontWeight.Bold, modifier = Modifier.align(Alignment.CenterHorizontally))
         Text("A product of CRYONA · Version 2.0.0", color = Muted, style = MaterialTheme.typography.labelSmall, modifier = Modifier.align(Alignment.CenterHorizontally))
     }
-}
 }
