@@ -4,6 +4,8 @@ import android.Manifest
 import android.app.DatePickerDialog
 import android.app.TimePickerDialog
 import android.content.Intent
+import android.content.ClipboardManager
+import android.widget.Toast
 import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Bundle
@@ -562,6 +564,15 @@ private fun SettingsScreen(
                 Spacer(Modifier.height(8.dp))
                 OutlinedButton(onClick = { importLauncher.launch(arrayOf("text/markdown", "text/plain", "text/*")) }, modifier = Modifier.fillMaxWidth()) {
                     Icon(Icons.Default.Add, null); Spacer(Modifier.width(8.dp)); Text("Import Markdown backup")
+                }
+                Spacer(Modifier.height(8.dp))
+                OutlinedButton(onClick = {
+                    val clipboard = context.getSystemService(android.content.Context.CLIPBOARD_SERVICE) as ClipboardManager
+                    val backup = clipboard.primaryClip?.getItemAt(0)?.coerceToText(context)?.toString().orEmpty()
+                    if (backup.isBlank()) Toast.makeText(context, "No Markdown backup found on clipboard", Toast.LENGTH_SHORT).show()
+                    else onImportMarkdown(backup)
+                }, modifier = Modifier.fillMaxWidth()) {
+                    Icon(Icons.Default.ContentCopy, null); Spacer(Modifier.width(8.dp)); Text("Import from clipboard")
                 }
             }
         }
