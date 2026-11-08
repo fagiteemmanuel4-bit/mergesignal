@@ -18,14 +18,18 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        if: env.ANDROID_KEYSTORE_BASE64 != ''
       - uses: actions/setup-java@v4
+        if: env.ANDROID_KEYSTORE_BASE64 != ''
         with:
           distribution: temurin
           java-version: '17'
       - uses: android-actions/setup-android@v3
+        if: env.ANDROID_KEYSTORE_BASE64 != ''
         with:
           packages: platform-tools
       - name: Install Android SDK
+        if: env.ANDROID_KEYSTORE_BASE64 != ''
         run: sdkmanager "platforms;android-35" "build-tools;35.0.0"
       - uses: gradle/actions/setup-gradle@v4
         with:
@@ -46,9 +50,14 @@ jobs:
 
   signed-release:
     name: Build signed production APK
-    if: github.event_name != 'pull_request' && secrets.ANDROID_KEYSTORE_BASE64 != ''
+    if: github.event_name != 'pull_request'
     runs-on: ubuntu-latest
+    env:
+      ANDROID_KEYSTORE_BASE64: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
     steps:
+      - name: Explain signing requirement
+        if: env.ANDROID_KEYSTORE_BASE64 == ''
+        run: echo "Signed release skipped. Configure the persistent Android keystore Actions secrets to publish a production APK."
       - uses: actions/checkout@v4
       - uses: actions/setup-java@v4
         with:
@@ -60,31 +69,37 @@ jobs:
       - name: Install Android SDK
         run: sdkmanager "platforms;android-35" "build-tools;35.0.0"
       - uses: gradle/actions/setup-gradle@v4
+        if: env.ANDROID_KEYSTORE_BASE64 != ''
         with:
           gradle-version: '8.7'
       - name: Restore private signing key
+        if: env.ANDROID_KEYSTORE_BASE64 != ''
         env:
           KEYSTORE_BASE64: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
         run: |
           echo "$KEYSTORE_BASE64" | base64 --decode > "$RUNNER_TEMP/prompt-notes-release.keystore"
           echo "ANDROID_KEYSTORE_PATH=$RUNNER_TEMP/prompt-notes-release.keystore" >> "$GITHUB_ENV"
       - name: Build signed release APK
+        if: env.ANDROID_KEYSTORE_BASE64 != ''
         env:
           ANDROID_KEYSTORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
           ANDROID_KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
           ANDROID_KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
         run: gradle --no-daemon clean assembleRelease
       - name: Verify signed release
+        if: env.ANDROID_KEYSTORE_BASE64 != ''
         run: |
           test -s app/build/outputs/apk/release/app-release.apk
           $ANDROID_HOME/build-tools/35.0.0/apksigner verify --verbose app/build/outputs/apk/release/app-release.apk
       - uses: actions/upload-artifact@v4
+        if: env.ANDROID_KEYSTORE_BASE64 != ''
         with:
           name: prompt-notes-native-release
           path: app/build/outputs/apk/release/app-release.apk
           if-no-files-found: error
           retention-days: 90
       - uses: softprops/action-gh-release@v2
+        if: env.ANDROID_KEYSTORE_BASE64 != ''
         with:
           tag_name: prompt-notes-v2.0.0-${{ github.run_number }}
           name: Prompt Notes Native Android v2.0.0-${{ github.run_number }}
