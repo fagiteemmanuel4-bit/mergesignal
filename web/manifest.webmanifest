@@ -1,0 +1,11 @@
+{
+  "name": "Prompt Notes",
+  "short_name": "Prompt Notes",
+  "description": "A focused space for saving, organizing and improving prompts.",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#fbfaf8",
+  "theme_color": "#c96442",
+  "icons": [{"src":"./icon.svg","sizes":"any","type":"image/svg+xml","purpose":"any maskable"}]
+}
