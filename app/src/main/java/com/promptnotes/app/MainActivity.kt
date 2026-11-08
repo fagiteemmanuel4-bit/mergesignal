@@ -528,9 +528,7 @@ private fun SettingsScreen(
                 Text("${notes.size} notes stored locally on this device.", color = Muted, style = MaterialTheme.typography.bodySmall)
                 Spacer(Modifier.height(12.dp))
                 OutlinedButton(onClick = {
-                    val backup = notes.joinToString("\n\n---\n\n") { note ->
-                        "# ${note.title.ifBlank { "Untitled note" }}\n\nFolder: ${note.folder}\n\n${note.content}"
-                    }
+                    val backup = MarkdownBackup.format(notes)
                     val intent = Intent(Intent.ACTION_SEND).apply {
                         type = "text/plain"
                         putExtra(Intent.EXTRA_SUBJECT, "Prompt Notes backup")
