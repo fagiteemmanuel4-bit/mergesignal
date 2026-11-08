@@ -31,7 +31,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 public class MainActivity extends Activity {
     private static final int AUDIO_PERMISSION_REQUEST = 410;
-    private static final String LIVE_URL = "https://fagiteemmanuel4-bit.github.io/mergesignal/index.html";
+    private static final String LIVE_URL = "https://raw.githubusercontent.com/fagiteemmanuel4-bit/mergesignal/main/web/index.html";
     private static final String PREFS = "prompt_notes_live";
     private static final String HTML_KEY = "live_html";
     private static final String HASH_KEY = "live_hash";
@@ -158,7 +158,7 @@ public class MainActivity extends Activity {
             int status = connection.getResponseCode();
             if (status != HttpURLConnection.HTTP_OK) return null;
             String type = connection.getContentType();
-            if (type != null && !type.toLowerCase().contains("text/html")) return null;
+            if (type != null && !type.toLowerCase().contains("text/html") && !type.toLowerCase().contains("text/plain")) return null;
             try (InputStream input = connection.getInputStream();
                  ByteArrayOutputStream output = new ByteArrayOutputStream()) {
                 byte[] buffer = new byte[8192];
