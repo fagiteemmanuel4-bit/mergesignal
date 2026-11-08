@@ -19,7 +19,7 @@
 - Light and dark appearance
 - Native notification permission flow
 - Scheduled reminders using WorkManager
-- Native text export/share
+- Native text export/share and Markdown backup import (file or clipboard)
 - AI Studio interface with an explicit not-connected state
 - Cryona product branding
 
@@ -36,7 +36,7 @@ The GitHub Actions workflow runs unit tests and builds/verifies a debug APK. A s
 Use the same keystore for every future release so Android can install updates over existing installations. Never rotate or regenerate this key for routine updates.
 
 ## Existing app data and migration
-The old 1.x app stored notes in WebView local storage. The native Room database is a separate storage system and cannot silently read that old browser store. Before replacing an older installation, export its notes from the old app and keep the backup. Import support will be included in the native app before the migration is considered complete. Do not uninstall the old app until the backup is safely stored.
+The old 1.x app stored notes in WebView local storage. The native Room database is a separate storage system and cannot silently read that old browser store. Before replacing an older installation, export its notes from the old app and keep the backup. The native Settings screen can import the exact Markdown format produced by the old app, either from a file or directly from the clipboard. Do not uninstall the old app until the backup is safely stored.
 
 ## Production status
 The native foundation and initial screens are being implemented on a dedicated branch. A green CI build is required before merge. Physical-device checks are still required for notifications, vibration, keyboard/IME behavior, Android 13+ permission prompts, and upgrade/data migration. The signed release remains gated on the persistent keystore secrets above.
