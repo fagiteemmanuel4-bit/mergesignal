@@ -348,6 +348,88 @@ title:'type',
 body:'card-text',
 act:'lightbulb'
 };
+function icons(r){(r||document).querySelectorAll('[data-i]').forEach(s=>{const name=ICONS[s.dataset.i]||'question-circle';s.className='bi bi-'+name+' i';s.setAttribute('aria-hidden','true')})}
+function ic(n){const s=document.createElement('i');s.className='bi i';s.dataset.i=n;icons({querySelectorAll:()=>[s]});return s}
+function setIcon(b,n){const s=b.querySelector('[data-i]');if(s){s.dataset.i=n;icons(b)}}
+icons();
+
+function ld(k,d){try{return JSON.parse(localStorage.getItem(k))||d}catch(e){return d}}
+function sv(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}
+let S=Object.assign({theme:'system',accent:'#c96442',fs:16,haptics:true,hs:'device',auto:true,rs:true,depth:'default',view:'list',sort:'recent',sys:''},ld('pn_set',{}));
+let notes=ld('pn_notes',[]),folders=ld('pn_folders',[]);
+let trash=ld('pn_trash',[]).filter(t=>Date.now()-t.d<2592e6);
+const save=()=>sv('pn_notes',notes), uid=()=>Date.now().toString(36)+Math.random().toString(36).slice(2,5);
+function buzz(p){try{if(!S.haptics||!navigator.vibrate)return;const m={soft:.5,device:1,strong:1.8}[S.hs]||1;p=p||10;navigator.vibrate(Array.isArray(p)?p.map(x=>Math.max(1,Math.round(x*m))):Math.max(1,Math.round(p*m)))}catch(e){}}
+let bt;function say(m,o={}){const b=$('bar'),a=$('ba');$('bm').textContent=m;b.className='show'+(o.err?' err':'');a.hidden=!o.act;a.textContent=o.act||'';a.onclick=()=>{b.className='';o.fn&&o.fn()};clearTimeout(bt);bt=setTimeout(()=>b.className='',o.act?4500:2200);if(o.err)buzz(50)}
+function apply(){const r=document.documentElement;S.theme==='system'?r.removeAttribute('data-theme'):r.setAttribute('data-theme',S.theme);r.style.setProperty('--accent',S.accent);r.style.setProperty('--accent-fg','#fff');r.style.setProperty('--fs',S.fs+'px')}
+apply();
+function show(id){qa('.view').forEach(v=>v.hidden=v.id!==id)}
+const offline=()=>!navigator.onLine;
+function net(){document.body.classList.toggle('offl',offline())}
+addEventListener('online',()=>{net();say('Back online')});addEventListener('offline',net);net();
+
+/* ---------- dashboard ---------- */
+let fol='',sel=new Set(),selMode=false,adding=false,lp=0,pt;
+const fmt=t=>new Date(t).toLocaleDateString(undefined,{month:'short',day:'numeric'});
+function rows(){
+  let r=notes.filter(n=>!fol||n.f===fol);const q=$('q').value.trim().toLowerCase();
+  if(q)r=r.filter(n=>(n.title+' '+(n.l?'':n.body)+' '+(n.g||[]).map(t=>'#'+t).join(' ')).toLowerCase().includes(q));
+  const so={recent:(a,b)=>b.t-a.t,old:(a,b)=>a.t-b.t,az:(a,b)=>(a.title||'~').localeCompare(b.title||'~')}[S.sort];
+  return r.sort((a,b)=>(b.p?1:0)-(a.p?1:0)||so(a,b));
+}
+function render(a){
+  $('home').classList.toggle('sel',selMode);setIcon($('vt'),S.view==='grid'?'list':'grid');
+  const ch=$('chips');ch.innerHTML='';
+  const mk=(t,on,fn)=>{const b=document.createElement('button');b.className='chip'+(on?' on':'');b.textContent=t;b.onclick=fn;ch.appendChild(b)};
+  mk('All',!fol,()=>{fol='';buzz(8);render(1)});
+  folders.forEach(f=>mk(f+' · '+notes.filter(n=>n.f===f).length,fol===f,()=>{fol=f;buzz(8);render(1)}));
+  if(adding){
+    const i=document.createElement('input');i.className='chip fin';i.placeholder='Folder name';ch.appendChild(i);setTimeout(()=>i.focus());
+    const fin=()=>{if(!adding)return;adding=false;const v=i.value.trim();if(v&&!folders.includes(v)){folders.push(v);sv('pn_folders',folders);fol=v;buzz([10,30,10])}render()};
+    i.onkeydown=e=>{if(e.key==='Enter')fin()};i.onblur=fin;
+  }else mk('+ Folder',false,()=>{adding=true;buzz(8);render()});
+  $('delF').hidden=!fol;$('delF').textContent='Delete folder';
+  const r=rows(),box=$('list');box.className=S.view==='grid'?'grid':'';box.innerHTML='';
+  $('sub').textContent=notes.length+(notes.length===1?' prompt':' prompts')+(fol?' · '+fol:'')+streakTxt();
+  $('sc2').textContent=sel.size+' selected';
+  if(!r.length){const d=document.createElement('div');d.className='empty';d.textContent=notes.length?'Nothing here yet.':'No prompts yet. Tap + to write your first one.';box.appendChild(d);return}
+  r.forEach((n,i)=>{
+    const c=document.createElement('button');c.className='card'+(sel.has(n.id)?' on':'');
+    if(a)c.style.animation='up .3s both '+Math.min(i,8)*30+'ms';
+    const h=document.createElement('b'),t=document.createElement('span');t.textContent=n.title||'Untitled prompt';if(n.l)h.appendChild(ic('lock'));if(n.p)h.appendChild(ic('pin'));h.appendChild(t);
+    const s=document.createElement('span');s.textContent=n.l?'Locked':(n.body||'Empty');
+    const m=document.createElement('small');m.textContent=(n.f?n.f+' · ':'')+fmt(n.t)+(n.g&&n.g.length?' · '+n.g.map(t=>'#'+t).join(' '):'');
+    c.append(h,s,m);
+    if(sel.has(n.id)){const k=document.createElement('div');k.className='ck';k.appendChild(ic('check'));c.appendChild(k)}
+    c.onpointerdown=()=>{lp=0;clearTimeout(pt);pt=setTimeout(()=>{lp=1;if(!selMode){buzz(25);selMode=true;sel.add(n.id);render()}},450)};
+    c.onpointerup=c.onpointerleave=c.onpointercancel=()=>clearTimeout(pt);
+    if(n.c)c.style.borderLeft='4px solid '+n.c;
+    let x0=0,y0=0,dx=0,sw=0;
+    c.addEventListener('touchstart',e=>{x0=e.touches[0].clientX;y0=e.touches[0].clientY;dx=0;sw=0},{passive:true});
+    c.addEventListener('touchmove',e=>{if(selMode)return;const mx=e.touches[0].clientX-x0,my=e.touches[0].clientY-y0;if(!sw&&Math.abs(mx)>12&&Math.abs(mx)>Math.abs(my)*1.5){sw=1;clearTimeout(pt)}if(sw){dx=mx;c.style.transform='translateX('+dx+'px)';c.style.opacity=1-Math.min(Math.abs(dx)/300,.5)}},{passive:true});
+    c.addEventListener('touchend',()=>{if(!sw)return;lp=1;c.style.transform='';c.style.opacity='';sw=0;if(dx>90){n.p=!n.p;save();buzz(15);render()}else if(dx<-90){del([n.id]);render()}});
+    c.onclick=()=>{if(lp){lp=0;return}buzz(8);if(selMode){sel.has(n.id)?sel.delete(n.id):sel.add(n.id);render()}else gate(n,()=>openNote(n.id))};
+    box.appendChild(c);
+  });
+}
+$('q').addEventListener('input',()=>render());
+$('vt').onclick=()=>{S.view=S.view==='grid'?'list':'grid';sv('pn_set',S);buzz(10);render(1);mark()};
+$('sb').onclick=()=>{buzz(15);selMode=true;sel.clear();render()};
+function exitSel(){selMode=false;sel.clear();render()}
+$('sx').onclick=()=>{buzz(8);exitSel()};
+$('sa').onclick=()=>{buzz(10);const r=rows();sel.size===r.length?sel.clear():r.forEach(n=>sel.add(n.id));render()};
+$('fab').onclick=()=>{buzz(12);const n={id:uid(),title:'',body:'',t:Date.now(),f:fol,p:false};notes.push(n);save();openNote(n.id);$('note').focus()};
+let dfArm=0;$('delF').onclick=()=>{if(!dfArm){dfArm=1;buzz(20);$('delF').textContent='Tap again to confirm';setTimeout(()=>{dfArm=0;if(fol)$('delF').textContent='Delete folder'},3000);return}
+  dfArm=0;notes.forEach(n=>{if(n.f===fol)n.f=''});folders=folders.filter(f=>f!==fol);sv('pn_folders',folders);save();fol='';buzz([20,40,20]);render(1);say('Folder deleted; prompts kept')};
+function del(ids){const rm=notes.filter(n=>ids.includes(n.id));notes=notes.filter(n=>!ids.includes(n.id));save();trash.push(...rm.map(n=>Object.assign({},n,{d:Date.now()})));sv('pn_trash',trash);buzz([20,40,20]);
+  say(rm.length+(rm.length>1?' prompts':' prompt')+' deleted',{act:'Undo',fn:()=>{trash=trash.filter(t=>!rm.some(r=>r.id===t.id));sv('pn_trash',trash);notes.push(...rm);save();render()}})}
+$('aDel').onclick=()=>{if(!sel.size)return say('Select something first',{err:1});del([...sel]);exitSel()};
+$('aPin').onclick=()=>{if(!sel.size)return say('Select something first',{err:1});const ns=notes.filter(n=>sel.has(n.id)),all=ns.every(n=>n.p);ns.forEach(n=>n.p=!all);save();buzz(15);exitSel()};
+$('aMove').onclick=()=>{
+  if(!sel.size)return say('Select something first',{err:1});buzz(10);const box=$('mv');box.innerHTML='';
+  ['',...folders].forEach(f=>{const b=document.createElement('button');b.append(ic('folder'),f||'No folder');b.onclick=()=>{notes.forEach(n=>{if(sel.has(n.id))n.f=f});save();buzz([10,30,10]);$('msheet').classList.remove('open');exitSel();say('Moved')};box.appendChild(b)});
+  $('msheet').classList.add('open');
+};
 $('msheet').onclick=e=>{if(e.target.id==='msheet')$('msheet').classList.remove('open')};
 $('gs').onclick=()=>{buzz(10);show('settings');mark();tcUpd()};
 $('sBack').onclick=()=>{buzz(8);show('home');render(1)};
