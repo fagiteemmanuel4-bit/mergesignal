@@ -40,22 +40,7 @@ class NotesViewModel(private val dao: NoteDao) : ViewModel() {
 
     fun importMarkdown(markdown: String) {
         viewModelScope.launch {
-            val raw = markdown.replace("\r\n", "\n").replace("\r", "\n").trim()
-            if (raw.isBlank()) return@launch
-            val blocks = raw.split(Regex("\n{2}---\n{2}(?=#\\s)"))
-            blocks.forEach { block ->
-                val heading = Regex("(?m)^#\\s+(.+?)(?:\n|$)").find(block) ?: return@forEach
-                val lines = block.substring(heading.range.last + 1).trimStart('\n').split("\n").toMutableList()
-                val folderMatch = lines.firstOrNull()?.trim()?.let { Regex("^_Folder:\\s*(.*?)_$").find(it) }
-                val folder = folderMatch?.groupValues?.get(1)?.trim().orEmpty().ifBlank { "Personal" }
-                if (folderMatch != null) lines.removeAt(0)
-                while (lines.isNotEmpty() && lines.first().isBlank()) lines.removeAt(0)
-                dao.insert(NoteEntity(
-                    title = heading.groupValues[1].trim().ifBlank { "Untitled note" },
-                    content = lines.joinToString("\n").trim(),
-                    folder = folder
-                ))
-            }
+            MarkdownBackup.parse(markdown).forEach { dao.insert(it.copy(id = 0)) }
         }
     }
 
