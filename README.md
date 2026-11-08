@@ -1,20 +1,21 @@
-# Prompt Notes for Android
+# Prompt Notes — Android + Live Web App
 
-A native Android application shell for the supplied Prompt Notes experience. The original single-file HTML interface is packaged locally in the app; no hosted website is required.
+Prompt Notes is packaged as an Android WebView app with an offline HTML fallback and a hosted live interface.
 
-## Compatibility
+## Android
 - Minimum Android: 7.0 (API 24)
 - Application ID: `com.promptnotes.app`
-- Build stack: Java, Android WebView, Android Gradle Plugin 8.6.1, Gradle 8.7, JDK 17
+- Java + Android WebView, JDK 17, Android Gradle Plugin 8.6.1
+- Local notes remain in the app's existing WebView localStorage origin.
+- When online, the WebView transparently serves the latest hosted interface at `https://prompt-notes-live.vercel.app` while keeping the local app origin, so existing local notes are preserved.
+- If offline, it uses the last cached live page or the bundled fallback.
+- The app checks for new interface versions every five minutes. If a note is open, it waits until the editor is closed before refreshing.
 
-## Included
-- Local notes and prompt storage using WebView DOM storage
-- Search, folders, tags, pins, trash, protected notes, and themes
-- Native Android share sheet bridge
-- Microphone permission handling for speech recognition when supported by the installed WebView
+## Live web app
+- Hosted by Vercel from `web/`.
+- Every push to the connected `main` branch deploys the live interface.
+- Bootstrap Icons are used for the interface icon system.
+- PWA manifest and service worker are included for browser installation and update caching.
 
-## AI integration
-The supplied HTML calls `claude.use('sample')`, an API available only inside the Claude artifact runtime. A standalone APK does not inherit that runtime. Notes and local features work, but Axiom chat and AI rewrite/run/title features remain unavailable until a secure AI service endpoint and credentials are configured. No API key is embedded in this APK.
-
-## Build
-The GitHub Actions workflow builds the debug APK in the cloud and publishes it as a GitHub Release asset. The build uses JDK 17 and Android SDK Platform 35.
+## Important
+Updates to HTML/CSS/JavaScript can go live to all installed apps without reinstalling. Changes to native Android code, permissions, app signing, or Android platform integration still require a new APK. AI calls in the original HTML still depend on the Claude artifact runtime; they need a secure standalone AI backend before they can work independently.
