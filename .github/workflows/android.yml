@@ -2,7 +2,7 @@ name: Build Prompt Notes Native Android
 
 on:
   push:
-    branches: [main]
+    branches: ['**']
     paths: ['app/**', 'build.gradle', 'settings.gradle', 'gradle.properties', '.github/workflows/android.yml']
   pull_request:
     branches: [main]
