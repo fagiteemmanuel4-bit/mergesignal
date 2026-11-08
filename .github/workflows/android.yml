@@ -33,6 +33,14 @@ jobs:
       - name: Sync live UI into offline fallback
         run: cp web/index.html app/src/main/assets/index.html
 
+      - name: Bundle Bootstrap Icons for offline use
+        run: |
+          mkdir -p app/src/main/assets/fonts
+          curl -fsSL "https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css" -o app/src/main/assets/bootstrap-icons.css
+          curl -fsSL "https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/fonts/bootstrap-icons.woff2" -o app/src/main/assets/fonts/bootstrap-icons.woff2
+          test -s app/src/main/assets/bootstrap-icons.css
+          test -s app/src/main/assets/fonts/bootstrap-icons.woff2
+
       - name: Set up Gradle
         uses: gradle/actions/setup-gradle@v4
         with:
@@ -58,8 +66,8 @@ jobs:
       - name: Publish APK release
         uses: softprops/action-gh-release@v2
         with:
-          tag_name: prompt-notes-v1.1.${{ github.run_number }}
-          name: Prompt Notes Android v1.1.${{ github.run_number }}
+          tag_name: prompt-notes-v1.1.1-${{ github.run_number }}
+          name: Prompt Notes Android v1.1.1-${{ github.run_number }}
           body: |
             Prompt Notes Android APK.
             Minimum Android version: Android 7.0 (API 24).
