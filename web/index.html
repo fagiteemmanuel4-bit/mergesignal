@@ -189,6 +189,13 @@ button:focus-visible,input:focus-visible,textarea:focus-visible,select:focus-vis
   *,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;scroll-behavior:auto!important;transition-duration:.01ms!important}
 }
 
+
+.import-help{font-size:13px;line-height:1.55;color:var(--muted);margin:4px 0 12px}
+.import-area{display:block;width:100%;min-width:0;min-height:190px;max-height:45vh;resize:vertical;border:1px solid var(--line);border-radius:13px;background:var(--card);color:var(--fg);padding:12px;font:14px/1.55 inherit;outline:none}
+.import-area:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(201,100,66,.12)}
+.import-actions{justify-content:flex-end;margin-top:12px;gap:8px}
+.import-actions button{min-height:44px}
+
 </style>
 <script>
 (function(){
@@ -287,6 +294,7 @@ button:focus-visible,input:focus-visible,textarea:focus-visible,select:focus-vis
     <h3>Data</h3>
     <div class="grp">
       <div class="r2"><button class="wipe" id="exp" style="color:var(--fg)"><div class="ri"><i class="bi bi-download i" data-i="download" aria-hidden="true"></i></div><div class="rt"><b>Export all as Markdown</b><small>Saves a .md file of unlocked prompts</small></div></button></div>
+      <div class="r2"><button class="wipe" id="imp" style="color:var(--fg)"><div class="ri"><i class="bi bi-upload i" data-i="upload" aria-hidden="true"></i></div><div class="rt"><b>Import Markdown backup</b><small>Restore notes copied from an older version</small></div></button></div>
       <div class="r2"><button class="wipe" id="trb" style="color:var(--fg)"><div class="ri"><i class="bi bi-trash3 i" data-i="trash" aria-hidden="true"></i></div><div class="rt"><b id="tc">Trash</b><small>Deleted prompts stay for 30 days</small></div></button></div>
       <div class="r2"><button class="wipe" id="wipe"><div class="ri"><i class="bi bi-trash3 i" data-i="trash" aria-hidden="true"></i></div><div class="rt"><b id="wt">Delete all prompts</b><small>Stored only on this device</small></div></button></div>
     </div>
@@ -345,7 +353,8 @@ day:'calendar-day',
 fol:'folder',
 title:'type',
 body:'card-text',
-act:'lightbulb'
+act:'lightbulb',
+upload:'upload'
 };
 function icons(r){(r||document).querySelectorAll('[data-i]').forEach(s=>{const name=ICONS[s.dataset.i]||'question-circle';s.className='bi bi-'+name+' i';s.setAttribute('aria-hidden','true')})}
 function ic(n){const s=document.createElement('i');s.className='bi i';s.dataset.i=n;icons({querySelectorAll:()=>[s]});return s}
@@ -562,6 +571,39 @@ $('tEmpty').onclick=()=>{if(!trash.length)return;trash=[];sv('pn_trash',trash);b
 $('exp').onclick=async()=>{const r=notes.filter(n=>!n.l);if(!r.length)return say('Nothing to export',{err:1});
   const md=r.map(n=>'# '+(n.title||'Untitled prompt')+(n.f?'\n_Folder: '+n.f+'_':'')+'\n\n'+n.body).join('\n\n---\n\n');
   try{const d=await claude.use('downloads');if(!d)throw 0;await d.save({filename:'prompts.md',data:md});buzz([10,30,10])}catch(e){if(e&&e.code==='declined')return;copy(md);say('Couldn’t save a file; copied instead')}};
+
+/* Markdown restore — compatible with the older app's unlocked-note export */
+function closeImport(){ $('importSheet').classList.remove('open'); }
+$('imp').onclick=()=>{ $('importText').value='';$('importSheet').classList.add('open');setTimeout(()=>$('importText').focus(),100); };
+$('importClose').onclick=closeImport;
+$('importCancel').onclick=closeImport;
+$('importSheet').addEventListener('click',e=>{if(e.target===$('importSheet'))closeImport()});
+$('importConfirm').onclick=()=>{
+  const raw=$('importText').value.replace(/\r\n?/g,'\n').trim();
+  if(!raw)return say('Paste your Markdown backup first',{err:1});
+  const blocks=raw.split(/\n{2}---\n{2}(?=#\s)/);
+  const restored=[];
+  blocks.forEach((block,index)=>{
+    const match=block.match(/^#\s+(.+?)(?:\n|$)/);
+    if(!match)return;
+    const lines=block.slice(match[0].length).split('\n');
+    let folder='';
+    const folderLine=lines[0]&&lines[0].trim().match(/^_Folder:\s*(.*?)_$/);
+    if(folderLine){folder=folderLine[1].trim();lines.shift();}
+    while(lines.length&&!lines[0].trim())lines.shift();
+    const body=lines.join('\n').trim();
+    const note={id:uid(),title:match[1].trim()||'Untitled prompt',body,t:Date.now()+index,f:folder,p:false,l:false};
+    restored.push(note);
+    if(folder&&!folders.includes(folder))folders.push(folder);
+  });
+  if(!restored.length)return say('No valid Prompt Notes entries were found',{err:1});
+  notes.push(...restored);
+  save();sv('pn_folders',folders);
+  closeImport();$('importText').value='';fol='';render(1);
+  say('Imported '+restored.length+' '+(restored.length===1?'note':'notes'));
+};
+document.addEventListener('keydown',e=>{if(e.key==='Escape'&&$('importSheet').classList.contains('open'))closeImport()});
+
 tcUpd();
 /* ---------- ask AI ---------- */
 let selC=null,chat=[],cbusy=false,cctx='';
@@ -697,5 +739,13 @@ mark();render(1);
 })();
 </script>
 
+<div class="sheet" id="importSheet">
+  <div class="panel">
+    <div class="ch"><b>Import Markdown backup</b><button class="icon" id="importClose" aria-label="Close import"><i class="bi bi-x-lg i" data-i="x" aria-hidden="true"></i></button></div>
+    <p class="import-help">Paste the text copied by <b>Export all as Markdown</b> in the older Prompt Notes app. Only unlocked notes included in that export can be restored.</p>
+    <textarea id="importText" class="import-area" rows="9" placeholder="Paste your Markdown backup here…" aria-label="Markdown backup text"></textarea>
+    <div class="row import-actions"><button id="importCancel">Cancel</button><button class="primary" id="importConfirm">Import notes</button></div>
+  </div>
+</div>
 </body>
 </html>
