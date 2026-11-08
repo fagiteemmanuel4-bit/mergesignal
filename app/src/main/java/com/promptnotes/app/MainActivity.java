@@ -31,7 +31,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 public class MainActivity extends Activity {
     private static final int AUDIO_PERMISSION_REQUEST = 410;
-    private static final String LIVE_URL = "https://prompt-notes-live.vercel.app/index.html";
+    private static final String LIVE_URL = "https://fagiteemmanuel4-bit.github.io/mergesignal/index.html";
     private static final String PREFS = "prompt_notes_live";
     private static final String HTML_KEY = "live_html";
     private static final String HASH_KEY = "live_hash";
