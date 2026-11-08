@@ -28,6 +28,8 @@ import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.horizontalScroll
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.layout.weight
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -49,6 +51,7 @@ import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.Send
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.AssistChip
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -456,6 +459,24 @@ private fun AiStudio(modifier: Modifier) {
             }
         }
         Spacer(Modifier.height(12.dp))
+        Text("QUICK ACTIONS", color = Muted, style = MaterialTheme.typography.labelSmall, fontWeight = FontWeight.Bold)
+        Spacer(Modifier.height(6.dp))
+        Row(
+            modifier = Modifier.fillMaxWidth().horizontalScroll(rememberScrollState()),
+            horizontalArrangement = Arrangement.spacedBy(8.dp)
+        ) {
+            listOf(
+                "Rewrite" to "Help me rewrite this text clearly and naturally.",
+                "Summarize" to "Summarize my note into concise key points.",
+                "Generate" to "Generate a well-structured note about: ",
+                "Continue" to "Continue writing from this point: ",
+                "Change tone" to "Rewrite this in a more professional tone: ",
+                "Create title" to "Suggest a clear, memorable title for this note."
+            ).forEach { (label, promptText) ->
+                AssistChip(onClick = { prompt = promptText }, label = { Text(label) })
+            }
+        }
+        Spacer(Modifier.height(8.dp))
         LazyColumn(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(10.dp), contentPadding = androidx.compose.foundation.layout.PaddingValues(vertical = 8.dp)) {
             items(messages) { line ->
                 Row(Modifier.fillMaxWidth(), horizontalArrangement = if (line.fromUser) Arrangement.End else Arrangement.Start) {
