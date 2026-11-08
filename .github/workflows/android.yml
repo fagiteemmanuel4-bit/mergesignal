@@ -1,4 +1,4 @@
-name: Build Prompt Notes APK
+name: Build Prompt Notes and deploy live app
 
 on:
   push:
@@ -9,8 +9,37 @@ permissions:
   contents: write
 
 jobs:
+  deploy-web:
+    name: Publish live web app
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Check out source
+        uses: actions/checkout@v4
+
+      - name: Configure GitHub Pages
+        uses: actions/configure-pages@v5
+        with:
+          enablement: true
+
+      - name: Upload live app
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: web
+
+      - name: Deploy live app
+        id: deployment
+        uses: actions/deploy-pages@v4
+
   build:
     name: Build and publish Android APK
+    needs: deploy-web
     runs-on: ubuntu-latest
     steps:
       - name: Check out source
@@ -55,11 +84,12 @@ jobs:
       - name: Publish APK release
         uses: softprops/action-gh-release@v2
         with:
-          tag_name: prompt-notes-v1.0.${{ github.run_number }}
-          name: Prompt Notes Android v1.0.${{ github.run_number }}
+          tag_name: prompt-notes-v1.1.${{ github.run_number }}
+          name: Prompt Notes Android v1.1.${{ github.run_number }}
           body: |
             Prompt Notes Android APK.
             Minimum Android version: Android 7.0 (API 24).
+            Live UI is served from GitHub Pages and updates without reinstalling.
             This is a debug-signed APK for direct installation.
           files: app/build/outputs/apk/debug/app-debug.apk
           fail_on_unmatched_files: true
