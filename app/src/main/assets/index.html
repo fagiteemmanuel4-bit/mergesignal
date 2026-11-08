@@ -5,7 +5,6 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Prompt Notes</title>
 <meta name="theme-color" content="#fbfaf8">
-<link rel="manifest" href="./manifest.webmanifest">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css">
 
 <style>
@@ -693,11 +692,6 @@ mark();render(1);
         });
         observer.observe(editor,{attributes:true,attributeFilter:['hidden']});
       }else{window.location.reload()}
-    });
-  }
-  if('serviceWorker' in navigator && location.protocol==='https:'){
-    window.addEventListener('load',function(){
-      navigator.serviceWorker.register('./sw.js').then(function(reg){reg.update()}).catch(function(){});
     });
   }
 })();
