@@ -205,7 +205,8 @@ private fun PromptNotesApp(activity: ComponentActivity) {
                     onEnableNotifications = {
                         if (Build.VERSION.SDK_INT >= 33) notificationPermission.launch(Manifest.permission.POST_NOTIFICATIONS)
                         else ReminderWorker.createChannel(context)
-                    }
+                    },
+                    onImportMarkdown = vm::importMarkdown
                 )
         }
     }
@@ -263,7 +264,8 @@ private fun MainShell(
     selectedTab: String, notes: List<NoteEntity>, onTab: (String) -> Unit,
     onNew: () -> Unit, onEdit: (Long) -> Unit, onPin: (NoteEntity) -> Unit,
     onDuplicate: (NoteEntity) -> Unit, onDelete: (NoteEntity) -> Unit,
-    darkMode: Boolean, onDarkMode: (Boolean) -> Unit, onEnableNotifications: () -> Unit
+    darkMode: Boolean, onDarkMode: (Boolean) -> Unit, onEnableNotifications: () -> Unit,
+    onImportMarkdown: (String) -> Unit
 ) {
     Scaffold(
         contentWindowInsets = WindowInsets.navigationBars,
@@ -295,7 +297,8 @@ private fun MainShell(
             "ai" -> AiStudio(Modifier.padding(padding))
             else -> SettingsScreen(
                 modifier = Modifier.padding(padding), darkMode = darkMode, onDarkMode = onDarkMode,
-                notes = notes, onEnableNotifications = onEnableNotifications
+                notes = notes, onEnableNotifications = onEnableNotifications,
+                onImportMarkdown = onImportMarkdown
             )
         }
     }
@@ -477,9 +480,16 @@ private fun AiStudio(modifier: Modifier) {
 @Composable
 private fun SettingsScreen(
     modifier: Modifier, darkMode: Boolean, onDarkMode: (Boolean) -> Unit,
-    notes: List<NoteEntity>, onEnableNotifications: () -> Unit
+    notes: List<NoteEntity>, onEnableNotifications: () -> Unit,
+    onImportMarkdown: (String) -> Unit
 ) {
     val context = LocalContext.current
+    val importLauncher = rememberLauncherForActivityResult(ActivityResultContracts.OpenDocument()) { uri ->
+        if (uri != null) {
+            runCatching { context.contentResolver.openInputStream(uri)?.bufferedReader()?.use { it.readText() } }
+                .getOrNull()?.let(onImportMarkdown)
+        }
+    }
     Column(modifier.fillMaxSize().padding(20.dp)) {
         Text("Preferences", style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Bold)
         Spacer(Modifier.height(16.dp))
@@ -524,6 +534,10 @@ private fun SettingsScreen(
                     context.startActivity(Intent.createChooser(intent, "Export notes"))
                 }, modifier = Modifier.fillMaxWidth()) {
                     Icon(Icons.Default.ContentCopy, null); Spacer(Modifier.width(8.dp)); Text("Export notes as text")
+                }
+                Spacer(Modifier.height(8.dp))
+                OutlinedButton(onClick = { importLauncher.launch(arrayOf("text/markdown", "text/plain", "text/*")) }, modifier = Modifier.fillMaxWidth()) {
+                    Icon(Icons.Default.Add, null); Spacer(Modifier.width(8.dp)); Text("Import Markdown backup")
                 }
             }
         }
