@@ -7,7 +7,7 @@
         android:label="Prompt Notes"
         android:icon="@drawable/ic_prompt_notes"
         android:roundIcon="@drawable/ic_prompt_notes"
-        android:theme="@style/Theme.PromptNotes"
+        android:theme="@style/Theme.PromptNotes.Starting"
         android:supportsRtl="true">
         <activity
             android:name=".MainActivity"
