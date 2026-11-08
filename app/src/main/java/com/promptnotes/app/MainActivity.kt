@@ -583,3 +583,4 @@ private fun SettingsScreen(
         Text("A product of CRYONA · Version 2.0.0", color = Muted, style = MaterialTheme.typography.labelSmall, modifier = Modifier.align(Alignment.CenterHorizontally))
     }
 }
+}
