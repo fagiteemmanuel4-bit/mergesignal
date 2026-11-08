@@ -38,6 +38,8 @@ android {
         }
     }
 
+    ksp { arg('room.schemaLocation', '$projectDir/schemas') }
+
     buildFeatures { compose true }
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_17
