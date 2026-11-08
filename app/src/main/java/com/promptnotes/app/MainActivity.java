@@ -146,7 +146,7 @@ public class MainActivity extends Activity {
     private byte[] downloadLiveHtml() {
         HttpURLConnection connection = null;
         try {
-            URL url = new URL(LIVE_URL + "?release=1.1.0&check=" + System.currentTimeMillis());
+            URL url = new URL(LIVE_URL + "?release=1.1.1&check=" + System.currentTimeMillis());
             connection = (HttpURLConnection) url.openConnection();
             connection.setRequestMethod("GET");
             connection.setConnectTimeout(5000);
@@ -154,7 +154,7 @@ public class MainActivity extends Activity {
             connection.setInstanceFollowRedirects(true);
             connection.setRequestProperty("Cache-Control", "no-cache, no-store");
             connection.setRequestProperty("Pragma", "no-cache");
-            connection.setRequestProperty("User-Agent", "PromptNotesAndroid/1.1.0");
+            connection.setRequestProperty("User-Agent", "PromptNotesAndroid/1.1.1");
             int status = connection.getResponseCode();
             if (status != HttpURLConnection.HTTP_OK) return null;
             String type = connection.getContentType();
