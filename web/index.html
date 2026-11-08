@@ -315,7 +315,11 @@ button:focus-visible,input:focus-visible,textarea:focus-visible,select:focus-vis
 <div class="sheet" id="importSheet">
   <div class="panel">
     <div class="ch"><b>Import Markdown backup</b><button class="icon" id="importClose" aria-label="Close import"><i class="bi bi-x-lg i" data-i="x" aria-hidden="true"></i></button></div>
-
+    <p class="import-help">Paste the text copied by <b>Export all as Markdown</b> in the older Prompt Notes app. Only unlocked notes included in that export can be restored.</p>
+    <textarea id="importText" class="import-area" rows="9" placeholder="Paste your Markdown backup here…" aria-label="Markdown backup text"></textarea>
+    <div class="row import-actions"><button id="importCancel">Cancel</button><button class="primary" id="importConfirm">Import notes</button></div>
+  </div>
+</div>
 <script>
 const $=id=>document.getElementById(id), qa=s=>[...document.querySelectorAll(s)];
 const ICONS={
@@ -743,10 +747,5 @@ mark();render(1);
 })();
 </script>
 
-    <p class="import-help">Paste the text copied by <b>Export all as Markdown</b> in the older Prompt Notes app. Only unlocked notes included in that export can be restored.</p>
-    <textarea id="importText" class="import-area" rows="9" placeholder="Paste your Markdown backup here…" aria-label="Markdown backup text"></textarea>
-    <div class="row import-actions"><button id="importCancel">Cancel</button><button class="primary" id="importConfirm">Import notes</button></div>
-  </div>
-</div>
-</body>
+    </body>
 </html>
