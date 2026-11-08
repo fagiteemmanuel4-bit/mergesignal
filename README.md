@@ -13,7 +13,7 @@ Prompt Notes is packaged as an Android WebView app with a bundled offline fallba
 
 ## Live interface and icons
 - Edit `web/index.html` for UI changes.
-- Bootstrap Icons 1.13.1 provides the icon set.
+- Bootstrap Icons 1.13.1 provides the icon set. The build bundles the stylesheet and WOFF2 font locally so icons also work offline.
 - Every push to `main` triggers a GitHub Actions build. The workflow copies `web/index.html` into the packaged offline fallback before compiling the APK.
 
 ## Automatic update limits
