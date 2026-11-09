@@ -103,8 +103,8 @@ main{flex:1;display:flex;min-height:0;position:relative}
 #mic:active{transform:scale(.9)}
 #mic.rec{background:var(--rec);border-color:var(--rec);color:#fff;animation:pulse 1.3s infinite}#mic.busy{pointer-events:none;opacity:.7}
 @keyframes pulse{0%{box-shadow:0 0 0 0 rgba(229,72,77,.5)}100%{box-shadow:0 0 0 16px rgba(229,72,77,0)}}
-#pill{position:absolute;left:16px;right:72px;bottom:16px;background:var(--card);border:1px solid var(--line);border-radius:14px;padding:8px 12px;font-size:13px;color:var(--muted);display:none;max-height:64px;overflow:hidden}
-#pill.on{display:block}#pill i{font-style:normal;color:var(--fg)}
+#pill{position:absolute;left:16px;right:72px;bottom:16px;background:color-mix(in srgb,var(--card) 94%,transparent);backdrop-filter:blur(14px);border:1px solid var(--line);border-radius:18px;padding:12px 14px;font-size:13px;color:var(--muted);display:none;align-items:center;gap:10px;min-height:44px;box-shadow:0 8px 24px rgba(0,0,0,.12)}#pill.on{display:flex}.voice-status-dot{width:8px;height:8px;flex:0 0 8px;border-radius:50%;background:var(--accent);box-shadow:0 0 0 5px color-mix(in srgb,var(--accent) 16%,transparent);animation:pulse 1.3s infinite}
+
 .spin{display:inline-block;width:11px;height:11px;border:2px solid var(--line);border-top-color:var(--accent);border-radius:50%;animation:sp .7s linear infinite;vertical-align:-1px;margin-right:6px}
 @keyframes sp{to{transform:rotate(360deg)}}
 footer{padding:4px 18px 8px;color:var(--muted);font-size:12px;display:flex;justify-content:space-between}
@@ -442,33 +442,62 @@ const SR=window.SpeechRecognition||window.webkitSpeechRecognition;
 let rec=null,recording=false,transcribing=false,finalText='',interim='',cancelled=false;
 function pill(h){const p=$('pill');if(h==null){p.classList.remove('on');return}p.innerHTML=h;p.classList.add('on')}
 const esc=s=>s.replace(/[&<>]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;'}[c]));
+function voiceStatus(label){
+  const p=$('pill');
+  if(!label){p.classList.remove('on');p.textContent='';return}
+  p.innerHTML='<span class="voice-status-dot"></span><span>'+label+'</span>';
+  p.classList.add('on');
+}
+function formatTranscript(raw){
+  let text=String(raw||'').replace(/\\s+/g,' ').trim();
+  if(!text)return '';
+  text=text.replace(/\\s+([,.;!?])/g,'$1').replace(/([,;:])(?=\\S)/g,'$1 ');
+  text=text.replace(/(^|[.!?]\\s+)([a-z])/g,(m,p,c)=>p+c.toUpperCase());
+  if(!/[.!?…]$/.test(text))text+='.';
+  const sentences=text.match(/[^.!?]+[.!?]+|[^.!?]+$/g)||[text];
+  const paragraphs=[];
+  for(let i=0;i<sentences.length;i+=4){
+    paragraphs.push(sentences.slice(i,i+4).join(' ').trim());
+  }
+  return paragraphs.join('\\n\\n');
+}
 function startRec(){
   finalText='';interim='';cancelled=false;
   if(window.AndroidNative&&typeof AndroidNative.startSpeech==='function'){
-    recording=true;transcribing=false;buzz(25);$('mic').classList.add('rec');setIcon($('mic'),'stop');pill('<span class="spin"></span>Listening…');
-    try{AndroidNative.startSpeech(navigator.language||'en-US')}catch(e){recording=false;$('mic').classList.remove('rec');setIcon($('mic'),'mic');pill(null);say('Couldn’t start the microphone',{err:1})}
+    recording=true;transcribing=false;buzz(25);$('mic').classList.add('rec');setIcon($('mic'),'stop');voiceStatus('Listening · tap the microphone when you’re done');
+    try{AndroidNative.startSpeech(navigator.language||'en-US')}catch(e){recording=false;$('mic').classList.remove('rec');setIcon($('mic'),'mic');voiceStatus(null);say('Couldn’t start the microphone',{err:1})}
     return;
   }
   if(offline())return say('You’re offline. Voice needs internet.',{err:1});
   if(!SR)return say('Voice isn’t supported in this browser',{err:1});
   rec=new SR();rec.continuous=true;rec.interimResults=true;rec.lang=navigator.language||'en-US';
-  rec.onresult=e=>{interim='';for(let i=e.resultIndex;i<e.results.length;i++){const r=e.results[i];if(r.isFinal)finalText+=r[0].transcript+' ';else interim+=r[0].transcript}pill('<i>'+esc((finalText+interim).slice(-140))+'</i>')};
-  rec.onerror=e=>{if(e.error==='not-allowed'||e.error==='service-not-allowed'){cancelled=true;recording=false;say('Microphone access blocked',{err:1})}};
+  rec.onresult=e=>{for(let i=e.resultIndex;i<e.results.length;i++){const r=e.results[i];if(r.isFinal)finalText+=r[0].transcript+' ';else interim=r[0].transcript}};
+  rec.onerror=e=>{if(e.error==='not-allowed'||e.error==='service-not-allowed'){cancelled=true;recording=false;voiceStatus(null);$('mic').classList.remove('rec');setIcon($('mic'),'mic');say('Microphone access blocked',{err:1})}};
   rec.onend=()=>{if(recording&&!cancelled){try{rec.start();return}catch(_){}}finishRec()};
   try{rec.start()}catch(e){return say('Couldn’t start the mic',{err:1})}
-  recording=true;buzz(25);$('mic').classList.add('rec');setIcon($('mic'),'stop');pill('<span class="spin"></span>Listening…');
+  recording=true;buzz(25);$('mic').classList.add('rec');setIcon($('mic'),'stop');voiceStatus('Listening · tap the microphone when you’re done');
 }
-function stopRec(){recording=false;transcribing=true;buzz([10,40,10]);$('mic').classList.remove('rec');$('mic').classList.add('busy');setIcon($('mic'),'mic');pill('<span class="spin"></span>Transcribing…');try{if(window.AndroidNative&&typeof AndroidNative.stopSpeech==='function'){AndroidNative.stopSpeech();return}rec.stop()}catch(e){finishRec()}}
+function stopRec(){
+  if(!recording)return;
+  recording=false;transcribing=true;buzz([10,40,10]);$('mic').classList.remove('rec');$('mic').classList.add('busy');setIcon($('mic'),'mic');voiceStatus('Transcribing your recording…');
+  try{if(window.AndroidNative&&typeof AndroidNative.stopSpeech==='function'){AndroidNative.stopSpeech();return}rec.stop()}catch(e){finishRec()}
+}
 function cancelRec(){cancelled=true;recording=false;try{if(window.AndroidNative&&typeof AndroidNative.cancelSpeech==='function')AndroidNative.cancelSpeech();else rec&&rec.abort()}catch(e){}finishRec(true)}
-window.onNativeSpeechResult=(text,isFinal)=>{if(!recording&&!transcribing)return;if(isFinal){finalText=(text||'').trim();interim='';finishRec();return}interim=text||'';pill('<i>'+esc((finalText+' '+interim).trim().slice(-140))+'</i>')};
-window.onNativeSpeechError=error=>{recording=false;transcribing=false;$('mic').classList.remove('rec','busy');setIcon($('mic'),'mic');pill(null);const message=error==='not-allowed'?'Please allow microphone access to use voice typing.':error==='network'?'Voice typing needs an internet connection.':error==='busy'?'The microphone is busy. Please try again.':'Voice recognition is unavailable. Check your Android speech services.';say(message,{err:1})};
+window.onNativeSpeechResult=(text,isFinal)=>{if(!recording&&!transcribing)return;if(isFinal){finalText=(text||'').trim();interim='';finishRec();return}interim=text||''};
+window.onNativeSpeechError=error=>{recording=false;transcribing=false;$('mic').classList.remove('rec','busy');setIcon($('mic'),'mic');voiceStatus(null);const message=error==='not-allowed'?'Please allow microphone access to use voice typing.':error==='network'?'Voice typing needs an internet connection.':error==='busy'?'The microphone is busy. Please try again.':'Voice recognition is unavailable. Check your Android speech services.';say(message,{err:1})};
 function finishRec(skip){
   const was=transcribing||recording;recording=false;transcribing=false;
   $('mic').classList.remove('rec','busy');setIcon($('mic'),'mic');
-  const text=(finalText+interim).trim();finalText='';interim='';
-  if(skip||!was){pill(null);return}
-  pill(null);if(!text)return say('Didn’t catch that',{err:1});
-  N.value+=(N.value&&!/\s$/.test(N.value)?' ':'')+text;sync();words();buzz([10,30,10,30,20]);genTitle();
+  const raw=(finalText+' '+interim).trim();finalText='';interim='';
+  if(skip||!was){voiceStatus(null);return}
+  voiceStatus('Formatting your note…');
+  if(!raw){voiceStatus(null);return say('Didn’t catch that. Please try speaking again.',{err:1})}
+  const text=formatTranscript(raw);
+  const prefix=N.value.trim()?N.value.replace(/\\s+$/,'')+'\\n\\n':'';
+  N.value=prefix+text;
+  N.dispatchEvent(new Event('input',{bubbles:true}));
+  N.focus();N.setSelectionRange(N.value.length,N.value.length);
+  sync();words();voiceStatus(null);buzz([10,30,10,30,20]);genTitle();
 }
 $('mic').onclick=()=>{if(transcribing)return;recording?stopRec():startRec()};
 
