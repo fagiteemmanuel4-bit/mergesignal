@@ -141,7 +141,7 @@ input[type=range]{width:100%;margin-top:10px;accent-color:var(--accent)}
 .wipe{width:100%;border:0;background:none;display:flex;align-items:center;gap:14px;text-align:left;padding:0;cursor:pointer;color:var(--rec)}
 .wipe .ri{background:color-mix(in srgb,var(--rec) 14%,transparent);color:var(--rec)}
 .fld{width:100%;margin-top:8px;padding:10px 12px;border-radius:12px;border:1px solid var(--line);background:var(--bg);color:var(--fg);font:inherit;font-size:14px;outline:none}
-</style>
+.ci{gap:7px}.attach{width:40px;height:40px;flex:none;border:1px solid var(--line);border-radius:50%;background:var(--bg);display:grid;place-items:center;color:var(--accent)}#chatFiles{display:none}#uploadPreview{display:flex;gap:7px;overflow:auto;padding:8px 12px 0}.upfile{position:relative;flex:none;border:1px solid var(--line);border-radius:12px;padding:5px 8px;background:var(--bg);font-size:11px;max-width:120px}.upfile img{width:58px;height:58px;object-fit:cover;border-radius:8px;display:block}.upfile button{position:absolute;right:-5px;top:-5px;border:0;border-radius:50%;background:var(--fg);color:var(--bg);width:20px;height:20px}.msg .media-preview{display:flex;gap:6px;flex-wrap:wrap;margin-top:6px}.msg .media-preview img{width:120px;height:110px;object-fit:cover;border-radius:10px;border:1px solid var(--line)}.msg .file-chip{font-size:12px;border:1px solid var(--line);border-radius:9px;padding:6px 8px}#onboard,#tour{position:fixed;inset:0;z-index:60;background:var(--bg);display:none;align-items:center;justify-content:center;padding:24px}#onboard.open,#tour.open{display:flex}.ob-card{width:min(100%,390px);text-align:center;background:var(--card);border:1px solid var(--line);border-radius:28px;padding:28px 22px;box-shadow:0 22px 70px #0003;animation:up .35s}.ob-art{width:112px;height:112px;border-radius:32px;margin:0 auto 22px;display:grid;place-items:center;background:color-mix(in srgb,var(--accent) 16%,transparent);color:var(--accent);font-size:54px}.ob-card h2{font-size:25px;margin:0 0 8px}.ob-card p{color:var(--muted);margin:0 0 22px}.ob-actions{display:flex;gap:9px}.ob-actions button{flex:1;border:1px solid var(--line);border-radius:14px;padding:12px;background:transparent}.ob-actions .primary{background:var(--accent);border-color:var(--accent);color:var(--accent-fg);font-weight:700}.ob-dots{display:flex;justify-content:center;gap:7px;margin:0 0 18px}.ob-dots i{width:7px;height:7px;border-radius:50%;background:var(--line)}.ob-dots i.on{width:20px;background:var(--accent)}#tour{background:#0009;align-items:flex-end;padding:18px}.tour-card{width:min(100%,430px);background:var(--card);color:var(--fg);border:1px solid var(--line);border-radius:22px;padding:20px;box-shadow:0 20px 60px #0007}.tour-card small{color:var(--accent);font-weight:700}.tour-card h3{margin:7px 0}.tour-card p{color:var(--muted);margin:0 0 16px}.tour-card button{border:0;border-radius:12px;padding:11px 16px;background:var(--accent);color:var(--accent-fg);font-weight:700}.tour-card .skip{background:transparent;color:var(--muted);margin-right:10px}</style>
 </head>
 <body>
 <div id="off"><svg class="i" data-i="off"></svg>Offline. You can still read and edit; AI and voice are paused.</div>
@@ -244,9 +244,9 @@ input[type=range]{width:100%;margin-top:10px;accent-color:var(--accent)}
 <div class="sheet" id="msheet"><div class="panel"><h2>Move to folder</h2><div class="mv" id="mv"></div></div></div>
 <div class="sheet" id="tsheet"><div class="panel"><h2>Trash · kept for 30 days</h2><div class="mv" id="tl"></div><div class="row" style="margin-top:12px"><button id="tEmpty">Empty trash</button><button id="tClose">Close</button></div></div></div>
 <div class="sheet" id="psheet"><div class="panel"><h2 id="pt">Enter PIN</h2><input id="pin" type="password" inputmode="numeric" maxlength="8" autocomplete="off"><div class="row"><button class="primary" id="pOk">OK</button><button id="pNo">Cancel</button></div></div></div>
-<div class="sheet" id="csheet"><div class="panel"><div class="ch"><b>Axiom 1.6<small style="display:block;font-weight:400;font-size:11px;color:var(--muted)">Reasoning · replies in Markdown</small></b><button class="icon" id="cn" aria-label="New chat"><svg class="i" data-i="filePlus"></svg></button><button class="icon" id="cc" aria-label="Copy chat"><svg class="i" data-i="copy"></svg></button><button class="icon" id="cx" aria-label="Close"><svg class="i" data-i="x"></svg></button></div><div id="cm"></div><div class="ci"><textarea id="ci" rows="1" placeholder="Reply…"></textarea><button id="csend" aria-label="Send"><svg class="i" data-i="send"></svg></button></div></div></div>
+<div class="sheet" id="csheet"><div class="panel"><div class="ch"><b>Axiom 1.6<small style="display:block;font-weight:400;font-size:11px;color:var(--muted)">Reasoning · replies in Markdown</small></b><button class="icon" id="cn" aria-label="New chat"><svg class="i" data-i="filePlus"></svg></button><button class="icon" id="cc" aria-label="Copy chat"><svg class="i" data-i="copy"></svg></button><button class="icon" id="cx" aria-label="Close"><svg class="i" data-i="x"></svg></button></div><div id="cm"></div><div id="uploadPreview"></div><div class="ci"><input id="chatFiles" type="file" accept="image/*,.txt,.md,.csv,.json,.log" multiple><button class="attach" id="attachChat" aria-label="Attach files">＋</button><textarea id="ci" rows="1" placeholder="Reply…"></textarea><button id="csend" aria-label="Send"><svg class="i" data-i="send"></svg></button></div></div></div>
 <div class="sheet" id="tgsheet"><div class="panel"><h2>Color &amp; tags</h2><div class="sws" id="tgc"></div><input id="tgi" placeholder="Tags, separated by commas" autocomplete="off"><div class="row"><button class="primary" id="tgOk">Done</button></div></div></div>
-<div id="bar"><i></i><span id="bm"></span><button id="ba" hidden></button></div>
+<div id="onboard"><div class="ob-card"><div class="ob-art" id="obArt">✦</div><div class="ob-dots" id="obDots"><i class="on"></i><i></i><i></i></div><h2 id="obTitle">Welcome to Prompt Notes</h2><p id="obText">Capture ideas, organize your prompts and get help from Axiom.</p><div class="ob-actions"><button id="obSkip">Skip</button><button class="primary" id="obNext">Next</button></div></div></div><div id="tour"><div class="tour-card"><small id="tourStep">QUICK TOUR · 1/4</small><h3 id="tourTitle">Your prompt library</h3><p id="tourText">All your saved prompts live here.</p><button class="skip" id="tourSkip">End tour</button><button id="tourNext">Next</button></div></div><div id="bar"><i></i><span id="bm"></span><button id="ba" hidden></button></div>
 
 <script>
 const $=id=>document.getElementById(id), qa=s=>[...document.querySelectorAll(s)];
@@ -471,7 +471,9 @@ let wArm=0;$('wipe').onclick=()=>{
 let runMode=false,selR=null;const unl=new Set();let pinCb=null,pinMode='';
 $('dots').addEventListener('pointerdown',()=>{selR=N.selectionEnd>N.selectionStart?[N.selectionStart,N.selectionEnd]:null});
 $('mUp').onclick=()=>ai('up');$('mRun').onclick=()=>ai('run');
-$('mShare').onclick=async()=>{closeMenu();const t=N.value.trim();if(!t)return say('Nothing to share',{err:1});try{if(navigator.share){await navigator.share({title:T.value||'Prompt',text:t});buzz([10,30,10])}else copy(t)}catch(e){if(e&&e.name!=='AbortError')copy(t)}};
+function safeFileName(s){return(s||'Prompt').trim().replace(/[^a-z0-9-_ ]/gi,'').replace(/\s+/g,'-').slice(0,48)||'Prompt'}
+async function sharePromptFile(){const text=N.value.trim();if(!text)return say('Nothing to share',{err:1});const name=safeFileName(T.value||'Prompt')+'.txt',file=new File([text+'\n'],name,{type:'text/plain'});try{if(navigator.share&&navigator.canShare&&navigator.canShare({files:[file]})){await navigator.share({title:T.value||'Prompt Notes',files:[file]});buzz([10,30,10]);return}}catch(e){if(e&&e.name==='AbortError')return}const url=URL.createObjectURL(file),a=document.createElement('a');a.href=url;a.download=name;a.click();setTimeout(()=>URL.revokeObjectURL(url),1500);say('TXT file ready to share')}
+$('mShare').onclick=()=>{closeMenu();sharePromptFile()};
 async function hash(p){try{const b=await crypto.subtle.digest('SHA-256',new TextEncoder().encode('pn:'+p));return [...new Uint8Array(b)].map(x=>x.toString(16).padStart(2,'0')).join('')}catch(e){return btoa('pn:'+p)}}
 function askPin(mode,cb){pinMode=mode;pinCb=cb;$('pt').textContent=mode==='set'?'Create a PIN (4–8 digits)':'Enter PIN';$('pin').value='';$('psheet').classList.add('open');setTimeout(()=>$('pin').focus(),50)}
 $('pNo').onclick=()=>{buzz(8);$('psheet').classList.remove('open');pinCb=null};
@@ -539,7 +541,7 @@ async function send(t){
   chat.push({role:'user',content:t});addMsg('user',t);
   const{m,b}=addMsg('ai','');b.innerHTML='<span class="spin"></span>Thinking…';cbusy=true;buzz(12);
   const first='You are a friendly, sharp assistant inside a notes app on a phone. Reply in clear Markdown: short paragraphs, **bold** key terms, bullet or numbered lists when helpful, code in fenced blocks. Be warm, direct and concise.\n'+sp()+'The user is writing this note (context only):\n"""\n'+cctx.slice(0,3000)+'\n"""\n\nUser:\n';
-  const msgs=chat.map((x,i)=>i?x:{role:'user',content:first+x.content});
+  const msgs=chat.map((x,i)=>i?x:{role:'user',content:Array.isArray(x.content)?[{type:'text',text:first},...x.content]:first+x.content});
   try{
     const out=await sample(msgs,{cache:false,onText:({text})=>{b.innerHTML=md(text);$('cm').scrollTop=1e9}});
     const r=(out.text||'').trim();chat.push({role:'assistant',content:r});b.innerHTML=md(r);actions(m,r);buzz([10,30,10]);
@@ -552,7 +554,12 @@ $('ci').onkeydown=e=>{if(e.key==='Enter'&&!e.shiftKey&&matchMedia('(pointer:fine
 $('cx').onclick=()=>{buzz(8);$('csheet').classList.remove('open')};
 $('csheet').onclick=e=>{if(e.target.id==='csheet')$('csheet').classList.remove('open')};
 /* ---------- Axiom 1.6 ---------- */
-let ctrl=null;
+let ctrl=null,chatUploads=[];
+$('attachChat').onclick=()=>{$('chatFiles').click();buzz(8)};
+$('chatFiles').onchange=async e=>{const files=[...e.target.files||[]];e.target.value='';for(const file of files){if(file.size>8*1024*1024){say(file.name+' is larger than 8 MB',{err:1});continue}if(!(file.type.startsWith('image/')||/\.(txt|md|csv|json|log)$/i.test(file.name))){say('Attach an image or a text, Markdown, CSV or JSON file.',{err:1});continue}const data=await new Promise((resolve,reject)=>{const r=new FileReader();r.onload=()=>resolve(r.result);r.onerror=reject;r.readAsDataURL(file)});chatUploads.push({name:file.name,type:file.type||'text/plain',data})}paintUploadPreview()};
+function paintUploadPreview(){const box=$('uploadPreview');box.innerHTML='';box.style.display=chatUploads.length?'flex':'none';chatUploads.forEach((f,i)=>{const el=document.createElement('div');el.className='upfile';if(f.type.startsWith('image/')){const im=document.createElement('img');im.src=f.data;el.appendChild(im)}const label=document.createElement('span');label.textContent=f.name.slice(0,18);el.appendChild(label);const x=document.createElement('button');x.textContent='×';x.onclick=()=>{chatUploads.splice(i,1);paintUploadPreview()};el.appendChild(x);box.appendChild(el)})}
+function mediaParts(files){return files.map(f=>f.type.startsWith('image/')?{type:'image_url',image_url:{url:f.data}}:{type:'text',text:'\n\nAttached file: '+f.name+'\n'+atob(f.data.split(',')[1]||'').slice(0,18000)})}
+function addUserMessage(text,files){const o=addMsg('user',text||'Please review the attached file(s).');if(files.length){const wrap=document.createElement('div');wrap.className='media-preview';files.forEach(f=>{if(f.type.startsWith('image/')){const im=document.createElement('img');im.src=f.data;im.alt=f.name;wrap.appendChild(im)}else{const chip=document.createElement('span');chip.className='file-chip';chip.textContent='▤ '+f.name;wrap.appendChild(chip)}});o.b.appendChild(wrap)}}
 function split(t){const i=t.indexOf('<reasoning>'),k=t.trim();
   if(i<0)return k&&'<reasoning>'.startsWith(k)&&k.length<11?{r:'',a:'',open:true}:{r:'',a:t,open:false};
   const s=i+11,j=t.indexOf('</reasoning>',s);
@@ -575,12 +582,12 @@ function actions(m,text){
   const q=document.createElement('div');q.className='qr';
   ['Explain simply','Give an example','Make it shorter'].forEach(l=>{const b=document.createElement('button');b.textContent=l;b.onclick=()=>send(l);q.appendChild(b)});
   $('cm').appendChild(q);$('cm').scrollTop=1e9}
-async function send(t,rg){
-  t=(t||'').trim();if(cbusy||(!rg&&!t))return;
+async function send(t,rg,files){
+   t=(t||'').trim();files=files||[];if(cbusy||(!rg&&!t&&!files.length))return;
   if(offline())return say('You’re offline. AI needs internet.',{err:1});
   if(!sample)return say('Add your AI key in Settings',{err:1});
   qa('#cm .qr').forEach(x=>x.remove());qa('#cm .rtry').forEach(x=>x.remove());
-  if(!rg){chat.push({role:'user',content:t});addMsg('user',t)}
+  if(!rg){const content=files.length?[{type:'text',text:t||'Please review the attached file(s).'},...mediaParts(files)]:t;chat.push({role:'user',content});addUserMessage(t,files)}
   const{m,b}=addMsg('ai','');paint(b,'',1);cbusy=true;setIcon($('csend'),'stop');buzz(12);
   const first='You are Axiom 1.6, the AI assistant inside a notes app on a phone. Be warm, direct and concise. Format replies in clear Markdown: short paragraphs, **bold** key terms, bullet or numbered lists when helpful, code in fenced blocks. You cannot browse the web or open links, so say so if asked for live information, and never invent sources. If someone sincerely asks what model or company is behind you, say you are Axiom 1.6 in this app and that you don’t know the underlying model.\n'
     +(S.rs?'Before answering, think it through inside <reasoning></reasoning> tags: 3 to 6 short plain-text steps showing how you understood the question and what you weighed. Then write the final answer after the closing tag. Never mention these tags.\n':'')
@@ -591,8 +598,8 @@ async function send(t,rg){
   catch(e){if(ctrl.signal.aborted)acc=(e&&e.text)||acc;else ok=false}
   cbusy=false;setIcon($('csend'),'send');acc=acc.trim();
   if(!ok||!acc){m.remove();if(!rg){chat.pop();const u=$('cm').lastElementChild;u&&u.remove()}say(ok?'Stopped':'Couldn’t get a reply. Try again.',{err:!ok});return}
-  const ans=split(acc).a||acc;chat.push({role:'assistant',content:ans});if(cur){cur.h=chat.slice(-20);save()}paint(b,acc);actions(m,ans);buzz([10,30,10]);$('cm').scrollTop=1e9}
-$('csend').onclick=()=>{if(cbusy){ctrl&&ctrl.abort();buzz(15);return}const v=$('ci').value;if(!v.trim())return;$('ci').value='';$('ci').style.height='';send(v)};
+  const ans=split(acc).a||acc;chat.push({role:'assistant',content:ans});if(cur){cur.h=chat.slice(-20).map(x=>({role:x.role,content:Array.isArray(x.content)?'Attached media: '+files.map(f=>f.name).join(', '):x.content}));save()}paint(b,acc);actions(m,ans);buzz([10,30,10]);$('cm').scrollTop=1e9}
+$('csend').onclick=()=>{if(cbusy){ctrl&&ctrl.abort();buzz(15);return}const v=$('ci').value,files=chatUploads.slice();if(!v.trim()&&!files.length)return;$('ci').value='';$('ci').style.height='';chatUploads=[];paintUploadPreview();send(v,false,files)};
 $('cc').onclick=()=>{if(!chat.length)return say('Nothing to copy',{err:1});copy(chat.map(x=>(x.role==='user'?'You: ':'Axiom 1.6: ')+x.content).join('\n\n'))};
 /* ---------- tags, colors, streak, chat history ---------- */
 const COL=['','#c96442','#3b82f6','#10a37f','#8b5cf6','#e5484d','#d68a00'];
@@ -631,6 +638,15 @@ async function aiCall(input,o={}){
 refreshAI();
 if('serviceWorker' in navigator&&/^https?:/.test(location.protocol))navigator.serviceWorker.register('sw.js').catch(()=>{});
 mark();render(1);
+const welcome=[['✦','Welcome to Prompt Notes','Capture ideas, save useful prompts and create with Axiom.'],['⌕','Organize your ideas','Use folders, tags, colors, pins, search and sorting to keep everything easy to find.'],['✧','Create with Axiom','Ask questions, rewrite prompts, dictate by voice and attach images or text files in AI chat.']];
+let welcomeIndex=0;function paintWelcome(){const v=welcome[welcomeIndex];$('obArt').textContent=v[0];$('obTitle').textContent=v[1];$('obText').textContent=v[2];[...$('obDots').children].forEach((d,i)=>d.classList.toggle('on',i===welcomeIndex));$('obNext').textContent=welcomeIndex===2?'Get started':'Next';$('onboard').classList.add('open')}
+function finishWelcome(){localStorage.setItem('pn_welcome_done','1');$('onboard').classList.remove('open');if(!localStorage.getItem('pn_tour_done'))startTour()}
+$('obSkip').onclick=finishWelcome;$('obNext').onclick=()=>{if(welcomeIndex<2){welcomeIndex++;paintWelcome()}else finishWelcome()};
+const tour=[['Your prompt library','Search, sort, pin and organize your saved prompts into folders.'],['Write and dictate','Tap + to create a prompt. Use the microphone for hands-free voice typing.'],['Ask Axiom','Open a note and tap the sparkle to ask questions. Attach images or text files in chat.'],['Make it yours','Settings lets you change theme, accent, text size, layout and haptics.']];let tourIndex=0;
+function paintTour(){const v=tour[tourIndex];$('tourStep').textContent='QUICK TOUR · '+(tourIndex+1)+'/4';$('tourTitle').textContent=v[0];$('tourText').textContent=v[1];$('tourNext').textContent=tourIndex===3?'Finish':'Next'}
+function startTour(){tourIndex=0;paintTour();$('tour').classList.add('open')}function finishTour(){localStorage.setItem('pn_tour_done','1');$('tour').classList.remove('open')}
+$('tourSkip').onclick=finishTour;$('tourNext').onclick=()=>{if(tourIndex<3){tourIndex++;paintTour()}else finishTour()};
+if(!localStorage.getItem('pn_welcome_done'))setTimeout(paintWelcome,250);
 </script>
 </body>
 </html>
