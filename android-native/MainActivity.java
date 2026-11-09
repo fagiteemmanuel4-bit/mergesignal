@@ -111,7 +111,13 @@ public class MainActivity extends BridgeActivity {
                         @Override public void onRmsChanged(float rmsdB) { }
                         @Override public void onBufferReceived(byte[] buffer) { }
                         @Override public void onEndOfSpeech() { }
-                        @Override public void onError(int error) { jsError(error == SpeechRecognizer.ERROR_INSUFFICIENT_PERMISSIONS ? "not-allowed" : "recognition-error"); }
+                        @Override public void onError(int error) {
+                            if (error == SpeechRecognizer.ERROR_NO_MATCH || error == SpeechRecognizer.ERROR_SPEECH_TIMEOUT) jsResult("", true);
+                            else if (error == SpeechRecognizer.ERROR_INSUFFICIENT_PERMISSIONS) jsError("not-allowed");
+                            else if (error == SpeechRecognizer.ERROR_NETWORK || error == SpeechRecognizer.ERROR_NETWORK_TIMEOUT) jsError("network");
+                            else if (error == SpeechRecognizer.ERROR_RECOGNIZER_BUSY) jsError("busy");
+                            else jsError("unavailable");
+                        }
                         @Override public void onResults(Bundle results) {
                             ArrayList<String> matches = results == null ? null : results.getStringArrayList(SpeechRecognizer.RESULTS_RECOGNITION);
                             jsResult(matches == null || matches.isEmpty() ? "" : matches.get(0), true);
