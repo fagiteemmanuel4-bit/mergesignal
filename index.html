@@ -279,7 +279,7 @@ let S=Object.assign({theme:'system',accent:'#c96442',fs:16,haptics:true,hs:'devi
 let notes=ld('pn_notes',[]),folders=ld('pn_folders',[]);
 let trash=ld('pn_trash',[]).filter(t=>Date.now()-t.d<2592e6);
 const save=()=>sv('pn_notes',notes), uid=()=>Date.now().toString(36)+Math.random().toString(36).slice(2,5);
-function buzz(p){try{if(!S.haptics||!navigator.vibrate)return;const m={soft:.5,device:1,strong:1.8}[S.hs]||1;p=p||10;navigator.vibrate(Array.isArray(p)?p.map(x=>Math.max(1,Math.round(x*m))):Math.max(1,Math.round(p*m)))}catch(e){}}
+function buzz(p){try{if(!S.haptics)return;const m={soft:.5,device:1,strong:1.8}[S.hs]||1;p=p||10;if(window.AndroidNative&&typeof AndroidNative.haptic==='function'){const ms=Array.isArray(p)?p.reduce((a,b)=>a+b,0):p;AndroidNative.haptic(Math.max(1,Math.round(ms*m)));return}if(!navigator.vibrate)return;navigator.vibrate(Array.isArray(p)?p.map(x=>Math.max(1,Math.round(x*m))):Math.max(1,Math.round(p*m)))}catch(e){}}
 let bt;function say(m,o={}){const b=$('bar'),a=$('ba');$('bm').textContent=m;b.className='show'+(o.err?' err':'');a.hidden=!o.act;a.textContent=o.act||'';a.onclick=()=>{b.className='';o.fn&&o.fn()};clearTimeout(bt);bt=setTimeout(()=>b.className='',o.act?4500:2200);if(o.err)buzz(50)}
 function apply(){const r=document.documentElement;S.theme==='system'?r.removeAttribute('data-theme'):r.setAttribute('data-theme',S.theme);r.style.setProperty('--accent',S.accent);r.style.setProperty('--accent-fg','#fff');r.style.setProperty('--fs',S.fs+'px')}
 apply();
@@ -415,9 +415,14 @@ let rec=null,recording=false,transcribing=false,finalText='',interim='',cancelle
 function pill(h){const p=$('pill');if(h==null){p.classList.remove('on');return}p.innerHTML=h;p.classList.add('on')}
 const esc=s=>s.replace(/[&<>]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;'}[c]));
 function startRec(){
+  finalText='';interim='';cancelled=false;
+  if(window.AndroidNative&&typeof AndroidNative.startSpeech==='function'){
+    recording=true;transcribing=false;buzz(25);$('mic').classList.add('rec');setIcon($('mic'),'stop');pill('<span class="spin"></span>Listening…');
+    try{AndroidNative.startSpeech(navigator.language||'en-US')}catch(e){recording=false;$('mic').classList.remove('rec');setIcon($('mic'),'mic');pill(null);say('Couldn’t start the microphone',{err:1})}
+    return;
+  }
   if(offline())return say('You’re offline. Voice needs internet.',{err:1});
   if(!SR)return say('Voice isn’t supported in this browser',{err:1});
-  finalText='';interim='';cancelled=false;
   rec=new SR();rec.continuous=true;rec.interimResults=true;rec.lang=navigator.language||'en-US';
   rec.onresult=e=>{interim='';for(let i=e.resultIndex;i<e.results.length;i++){const r=e.results[i];if(r.isFinal)finalText+=r[0].transcript+' ';else interim+=r[0].transcript}pill('<i>'+esc((finalText+interim).slice(-140))+'</i>')};
   rec.onerror=e=>{if(e.error==='not-allowed'||e.error==='service-not-allowed'){cancelled=true;recording=false;say('Microphone access blocked',{err:1})}};
@@ -425,8 +430,10 @@ function startRec(){
   try{rec.start()}catch(e){return say('Couldn’t start the mic',{err:1})}
   recording=true;buzz(25);$('mic').classList.add('rec');setIcon($('mic'),'stop');pill('<span class="spin"></span>Listening…');
 }
-function stopRec(){recording=false;transcribing=true;buzz([10,40,10]);$('mic').classList.remove('rec');$('mic').classList.add('busy');setIcon($('mic'),'mic');pill('<span class="spin"></span>Transcribing…');try{rec.stop()}catch(e){finishRec()}}
-function cancelRec(){cancelled=true;recording=false;try{rec&&rec.abort()}catch(e){}finishRec(true)}
+function stopRec(){recording=false;transcribing=true;buzz([10,40,10]);$('mic').classList.remove('rec');$('mic').classList.add('busy');setIcon($('mic'),'mic');pill('<span class="spin"></span>Transcribing…');try{if(window.AndroidNative&&typeof AndroidNative.stopSpeech==='function'){AndroidNative.stopSpeech();return}rec.stop()}catch(e){finishRec()}}
+function cancelRec(){cancelled=true;recording=false;try{if(window.AndroidNative&&typeof AndroidNative.cancelSpeech==='function')AndroidNative.cancelSpeech();else rec&&rec.abort()}catch(e){}finishRec(true)}
+window.onNativeSpeechResult=(text,isFinal)=>{if(!recording&&!transcribing)return;if(isFinal){finalText=(text||'').trim();interim='';if(transcribing)finishRec()}else{interim=text||''}pill('<i>'+esc((finalText+' '+interim).trim().slice(-140))+'</i>')};
+window.onNativeSpeechError=error=>{recording=false;transcribing=false;$('mic').classList.remove('rec','busy');setIcon($('mic'),'mic');pill(null);say(error==='not-allowed'?'Please allow microphone access to use voice typing.':'Voice recognition could not start. Check that Android speech recognition is available.',{err:1})};
 function finishRec(skip){
   const was=transcribing||recording;recording=false;transcribing=false;
   $('mic').classList.remove('rec','busy');setIcon($('mic'),'mic');
