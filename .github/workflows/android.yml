@@ -22,6 +22,8 @@ jobs:
           java-version: 17
       - run: npm install
       - run: npm run prep
+      - name: Validate app JavaScript and configuration
+        run: npm run check
       - run: npx cap add android
       - name: Install native Android microphone and haptics bridge
         run: npm run android:patch
