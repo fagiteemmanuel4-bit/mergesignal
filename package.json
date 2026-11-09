@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "private": true,
   "scripts": {
-    "prep": "mkdir -p www && cp index.html manifest.webmanifest sw.js icon.svg icon-192.png icon-512.png www/",
+    "prep": "mkdir -p www && cp index.html manifest.webmanifest sw.js icon.svg icon-192.png icon-512.png splash.svg www/",
     "android:add": "npm run prep && npx cap add android",
     "android:sync": "npm run prep && npx cap sync android",
     "android:open": "npx cap open android",
