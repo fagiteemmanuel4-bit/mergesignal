@@ -620,7 +620,7 @@ async function aiCall(input,o={}){
   };
   for(;;){
     let x;try{x=await rd.read()}catch(e){if(o.signal&&o.signal.aborted)throw{code:'aborted',text:acc};throw{code:'network'}}
-    if(x.done)break;buf+=dec.decode(x.value,{stream:true});const lines=buf.split(/\\r?\\n/);buf=lines.pop();for(const line of lines){consume(line);if(finished)break}if(finished){try{await rd.cancel()}catch(_){}break}
+    if(x.done)break;buf+=dec.decode(x.value,{stream:true});const lines=buf.split(/\r?\n/);buf=lines.pop();for(const line of lines){consume(line);if(finished)break}if(finished){try{await rd.cancel()}catch(_){}break}
   }
   buf+=dec.decode();if(!finished&&buf.trim())consume(buf);
   return{text:acc,truncated:false};
