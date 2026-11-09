@@ -30,8 +30,16 @@ jobs:
           else
             source_dir="/tmp/prompt-notes-import"
           fi
+          mkdir -p /tmp/imported-workflows
+          if [ -f "${source_dir}/.github/workflows/android.yml" ]; then
+            cp "${source_dir}/.github/workflows/android.yml" /tmp/imported-workflows/android.yml
+            rm -f "${source_dir}/.github/workflows/android.yml"
+          fi
           cp -a "${source_dir}/." .
           rm -f prompt-notes-for-chatgpt.zip
+          echo "----- UPLOADED ANDROID WORKFLOW CONTENT -----"
+          if [ -f /tmp/imported-workflows/android.yml ]; then cat /tmp/imported-workflows/android.yml; fi
+          echo "----- END UPLOADED ANDROID WORKFLOW CONTENT -----"
           git add -A
           if ! git diff --cached --quiet; then
             git config user.name "github-actions[bot]"
