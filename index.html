@@ -435,7 +435,7 @@ function startRec(){
 function stopRec(){recording=false;transcribing=true;buzz([10,40,10]);$('mic').classList.remove('rec');$('mic').classList.add('busy');setIcon($('mic'),'mic');pill('<span class="spin"></span>Transcribing…');try{if(window.AndroidNative&&typeof AndroidNative.stopSpeech==='function'){AndroidNative.stopSpeech();return}rec.stop()}catch(e){finishRec()}}
 function cancelRec(){cancelled=true;recording=false;try{if(window.AndroidNative&&typeof AndroidNative.cancelSpeech==='function')AndroidNative.cancelSpeech();else rec&&rec.abort()}catch(e){}finishRec(true)}
 window.onNativeSpeechResult=(text,isFinal)=>{if(!recording&&!transcribing)return;if(isFinal){finalText=(text||'').trim();interim='';if(transcribing)finishRec()}else{interim=text||''}pill('<i>'+esc((finalText+' '+interim).trim().slice(-140))+'</i>')};
-window.onNativeSpeechError=error=>{recording=false;transcribing=false;$('mic').classList.remove('rec','busy');setIcon($('mic'),'mic');pill(null);say(error==='not-allowed'?'Please allow microphone access to use voice typing.':'Voice recognition could not start. Check that Android speech recognition is available.',{err:1})};
+window.onNativeSpeechError=error=>{recording=false;transcribing=false;$('mic').classList.remove('rec','busy');setIcon($('mic'),'mic');pill(null);const message=error==='not-allowed'?'Please allow microphone access to use voice typing.':error==='network'?'Voice typing needs an internet connection.':error==='busy'?'The microphone is busy. Please try again.':'Voice recognition is unavailable. Check your Android speech services.';say(message,{err:1})};
 function finishRec(skip){
   const was=transcribing||recording;recording=false;transcribing=false;
   $('mic').classList.remove('rec','busy');setIcon($('mic'),'mic');
