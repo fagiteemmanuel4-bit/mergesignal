@@ -13,6 +13,7 @@ import android.speech.RecognitionListener;
 import android.speech.RecognizerIntent;
 import android.speech.SpeechRecognizer;
 import android.webkit.JavascriptInterface;
+import android.view.HapticFeedbackConstants;
 
 import androidx.core.content.ContextCompat;
 
@@ -30,6 +31,7 @@ public class MainActivity extends BridgeActivity {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         nativeBridge = new NativeBridge();
+        getWindow().getDecorView().setHapticFeedbackEnabled(true);
         getBridge().getWebView().addJavascriptInterface(nativeBridge, "AndroidNative");
     }
 
@@ -60,6 +62,8 @@ public class MainActivity extends BridgeActivity {
             runOnUiThread(() -> {
                 try {
                     if (Settings.System.getInt(getContentResolver(), Settings.System.HAPTIC_FEEDBACK_ENABLED, 1) == 0) return;
+                    int feedback = durationMs >= 35 ? HapticFeedbackConstants.LONG_PRESS : HapticFeedbackConstants.KEYBOARD_TAP;
+                    if (getWindow().getDecorView().performHapticFeedback(feedback)) return;
                     Vibrator vibrator;
                     if (Build.VERSION.SDK_INT >= 31) {
                         VibratorManager manager = getSystemService(VibratorManager.class);
