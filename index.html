@@ -275,12 +275,12 @@ icons();
 
 function ld(k,d){try{const v=JSON.parse(localStorage.getItem(k));return v==null?d:v}catch(e){return d}}
 function ldArray(k){const v=ld(k,[]);return Array.isArray(v)?v:[]}
-function sv(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}
+function sv(k,v){try{localStorage.setItem(k,JSON.stringify(v));return true}catch(e){return false}}
 let S=Object.assign({theme:'system',accent:'#c96442',fs:16,haptics:true,hs:'device',auto:true,rs:true,depth:'default',view:'list',sort:'recent',sys:''},ld('pn_set',{}));
 let notes=ldArray('pn_notes').filter(n=>n&&typeof n==='object'&&n.id);
 let folders=[...new Set(ldArray('pn_folders').filter(f=>typeof f==='string'&&f.trim()).map(f=>f.trim()))];
 let trash=ldArray('pn_trash').filter(t=>t&&typeof t==='object'&&t.id&&Number.isFinite(+t.d)&&Date.now()-t.d<2592e6);
-const save=()=>sv('pn_notes',notes), uid=()=>Date.now().toString(36)+Math.random().toString(36).slice(2,5);
+let storageWarningAt=0;const save=()=>{const ok=sv('pn_notes',notes);if(!ok&&Date.now()-storageWarningAt>5000){storageWarningAt=Date.now();say('Device storage is full. Export or remove notes to save changes.',{err:1})}return ok}, uid=()=>Date.now().toString(36)+Math.random().toString(36).slice(2,5);
 let lastBuzzAt=0;
 function buzz(p){try{if(!S.haptics)return;lastBuzzAt=Date.now();const m={soft:.5,device:1,strong:1.8}[S.hs]||1;p=p||10;if(window.AndroidNative&&typeof AndroidNative.haptic==='function'){const ms=Array.isArray(p)?p.reduce((a,b)=>a+b,0):p;AndroidNative.haptic(Math.max(1,Math.round(ms*m)));return}if(!navigator.vibrate)return;navigator.vibrate(Array.isArray(p)?p.map(x=>Math.max(1,Math.round(x*m))):Math.max(1,Math.round(p*m)))}catch(e){}}
 document.addEventListener('click',e=>{const target=e.target;const control=target&&target.closest&&target.closest('button,[role="button"],a');if(control&&Date.now()-lastBuzzAt>120)buzz(8)},false);
@@ -362,7 +362,7 @@ $('sBack').onclick=()=>{buzz(8);show('home');render(1)};
 let cur=null,timer,busy=false,upgraded='',sample=null;
 const T=$('title'),N=$('note');
 function words(){const w=N.value.trim().split(/\s+/).filter(Boolean).length;$('count').textContent=w+(w===1?' word':' words')+' · '+N.value.length+' chars'}
-function sync(){if(!cur)return;cur.title=T.value;cur.body=N.value;cur.t=Date.now();if(N.value.trim())bump();save();$('saved').textContent='Saved'}
+function sync(){if(!cur)return;cur.title=T.value;cur.body=N.value;cur.t=Date.now();if(N.value.trim())bump();$('saved').textContent=save()?'Saved':'Not saved'}
 function queue(){words();$('saved').textContent='';clearTimeout(timer);timer=setTimeout(sync,400)}
 T.addEventListener('input',queue);N.addEventListener('input',queue);
 function openNote(id){cur=notes.find(n=>n.id===id);if(!cur)return;T.value=cur.title;N.value=cur.body;words();closeMenu();$('saved').textContent='';show('editor')}
@@ -436,15 +436,15 @@ function startRec(){
 }
 function stopRec(){recording=false;transcribing=true;buzz([10,40,10]);$('mic').classList.remove('rec');$('mic').classList.add('busy');setIcon($('mic'),'mic');pill('<span class="spin"></span>Transcribing…');try{if(window.AndroidNative&&typeof AndroidNative.stopSpeech==='function'){AndroidNative.stopSpeech();return}rec.stop()}catch(e){finishRec()}}
 function cancelRec(){cancelled=true;recording=false;try{if(window.AndroidNative&&typeof AndroidNative.cancelSpeech==='function')AndroidNative.cancelSpeech();else rec&&rec.abort()}catch(e){}finishRec(true)}
-window.onNativeSpeechResult=(text,isFinal)=>{if(!recording&&!transcribing)return;if(isFinal){finalText=(text||'').trim();interim='';if(transcribing)finishRec()}else{interim=text||''}pill('<i>'+esc((finalText+' '+interim).trim().slice(-140))+'</i>')};
+window.onNativeSpeechResult=(text,isFinal)=>{if(!recording&&!transcribing)return;if(isFinal){finalText=(text||'').trim();interim='';finishRec();return}interim=text||'';pill('<i>'+esc((finalText+' '+interim).trim().slice(-140))+'</i>')};
 window.onNativeSpeechError=error=>{recording=false;transcribing=false;$('mic').classList.remove('rec','busy');setIcon($('mic'),'mic');pill(null);const message=error==='not-allowed'?'Please allow microphone access to use voice typing.':error==='network'?'Voice typing needs an internet connection.':error==='busy'?'The microphone is busy. Please try again.':'Voice recognition is unavailable. Check your Android speech services.';say(message,{err:1})};
 function finishRec(skip){
   const was=transcribing||recording;recording=false;transcribing=false;
   $('mic').classList.remove('rec','busy');setIcon($('mic'),'mic');
   const text=(finalText+interim).trim();finalText='';interim='';
   if(skip||!was){pill(null);return}
-  setTimeout(()=>{pill(null);if(!text)return say('Didn’t catch that',{err:1});
-    N.value+=(N.value&&!/\s$/.test(N.value)?' ':'')+text;sync();words();buzz([10,30,10,30,20]);genTitle()},400);
+  pill(null);if(!text)return say('Didn’t catch that',{err:1});
+  N.value+=(N.value&&!/\s$/.test(N.value)?' ':'')+text;sync();words();buzz([10,30,10,30,20]);genTitle();
 }
 $('mic').onclick=()=>{if(transcribing)return;recording?stopRec():startRec()};
 
@@ -490,7 +490,7 @@ function tOpen(){const box=$('tl');box.innerHTML='';tcUpd();
 $('trb').onclick=()=>{buzz(10);tOpen();$('tsheet').classList.add('open')};
 $('tClose').onclick=()=>$('tsheet').classList.remove('open');
 $('tsheet').onclick=e=>{if(e.target.id==='tsheet')$('tsheet').classList.remove('open')};
-$('tEmpty').onclick=()=>{if(!trash.length)return;trash=[];sv('pn_trash',trash);buzz([20,40,20]);tOpen()};
+let emptyTrashArmed=false,emptyTrashTimer;$('tEmpty').onclick=()=>{if(!trash.length)return;if(!emptyTrashArmed){emptyTrashArmed=true;$('tEmpty').textContent='Tap again to permanently empty';buzz(18);clearTimeout(emptyTrashTimer);emptyTrashTimer=setTimeout(()=>{emptyTrashArmed=false;$('tEmpty').textContent='Empty trash'},3500);return}emptyTrashArmed=false;clearTimeout(emptyTrashTimer);$('tEmpty').textContent='Empty trash';trash=[];sv('pn_trash',trash);buzz([20,40,20]);tOpen();say('Trash emptied')};
 $('exp').onclick=async()=>{const r=notes.filter(n=>!n.l);if(!r.length)return say('Nothing to export',{err:1});
   const md=r.map(n=>'# '+(n.title||'Untitled prompt')+(n.f?'\n_Folder: '+n.f+'_':'')+'\n\n'+n.body).join('\n\n---\n\n');
   try{const u=URL.createObjectURL(new Blob([md],{type:'text/markdown'})),a=document.createElement('a');a.href=u;a.download='prompts.md';document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(u),2000);buzz([10,30,10])}catch(e){copy(md);say('Couldn’t save a file; copied instead')}};
