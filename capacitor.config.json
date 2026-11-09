@@ -1,0 +1,6 @@
+{
+  "appId": "com.axiom.promptnotes",
+  "appName": "Prompt Notes",
+  "webDir": "www",
+  "android": { "allowMixedContent": false }
+}
