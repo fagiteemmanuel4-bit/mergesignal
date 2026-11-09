@@ -20,6 +20,8 @@ jobs:
       - run: npm install
       - run: npm run prep
       - run: npx cap add android
+      - name: Install native Android microphone and haptics bridge
+        run: npm run android:patch
       - run: npx cap sync android
       - run: cd android && chmod +x gradlew && ./gradlew assembleDebug
       - name: Rename APK
