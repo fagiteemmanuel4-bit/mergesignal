@@ -1,0 +1,46 @@
+name: Import Prompt Notes project
+on:
+  push:
+    branches: [main]
+    paths:
+      - prompt-notes-for-chatgpt.zip
+  workflow_dispatch:
+permissions:
+  contents: write
+  actions: write
+jobs:
+  import:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+      - name: Import ZIP contents into repository root
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -f prompt-notes-for-chatgpt.zip
+          mkdir -p /tmp/prompt-notes-import
+          unzip -q prompt-notes-for-chatgpt.zip -d /tmp/prompt-notes-import
+          mapfile -t entries < <(find /tmp/prompt-notes-import -mindepth 1 -maxdepth 1 -printf '%p\n')
+          if [ "${#entries[@]}" -eq 1 ] && [ -d "${entries[0]}" ]; then
+            source_dir="${entries[0]}"
+          else
+            source_dir="/tmp/prompt-notes-import"
+          fi
+          cp -a "${source_dir}/." .
+          rm -f prompt-notes-for-chatgpt.zip
+          git add -A
+          if ! git diff --cached --quiet; then
+            git config user.name "github-actions[bot]"
+            git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+            git commit -m "Replace project with Prompt Notes Android build"
+            git push origin HEAD:main
+          fi
+      - name: Dispatch Android build workflow
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          set -euo pipefail
+          gh workflow run android.yml --ref main
